@@ -1,33 +1,28 @@
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Loader2 } from "lucide-react";
 import HistoryCard from "@/components/HistoryCard";
+import type { Routine } from "@shared/types";
 
 export default function History() {
-  //todo: remove mock functionality - replace with actual history from backend
-  const routines = [
-    {
-      id: "1",
-      date: "Nov 20, 2025",
-      opponent: "Carlos Vega",
-      preview: "Take deep breaths. Focus on your forehand. Remember to stay patient and play to your strengths. Control the pace with variety and exploit their weak backhand."
-    },
-    {
-      id: "2",
-      date: "Nov 18, 2025",
-      opponent: "Sarah Chen",
-      preview: "You are calm and focused. Use your strong serve to dominate. Stay aggressive on returns and don't let her settle into a rhythm."
-    },
-    {
-      id: "3",
-      date: "Nov 15, 2025",
-      opponent: "Michael Torres",
-      preview: "Trust your training. Your footwork is excellent. Keep the ball deep and move him around the court. Stay patient and wait for your opportunities."
-    },
-    {
-      id: "4",
-      date: "Nov 12, 2025",
-      opponent: "Emma Wilson",
-      preview: "This is your moment. Focus on placement over power. Mix up your shots to keep her guessing. Remember: calm mind, powerful game."
-    },
-  ];
+  const { data: routines, isLoading } = useQuery<Routine[]>({
+    queryKey: ["/api/routines"],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const formattedRoutines = routines?.map((routine) => ({
+    id: routine.id,
+    date: format(new Date(routine.createdAt), "MMM dd, yyyy"),
+    opponent: routine.opponentName,
+    preview: routine.routineText.substring(0, 200),
+  })) || [];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -36,13 +31,13 @@ export default function History() {
         Review your past pre-match routines and track your preparation
       </p>
 
-      {routines.length === 0 ? (
+      {formattedRoutines.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted-foreground text-lg">No routines yet. Start your first pre-match routine!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {routines.map((routine) => (
+          {formattedRoutines.map((routine) => (
             <HistoryCard key={routine.id} {...routine} />
           ))}
         </div>

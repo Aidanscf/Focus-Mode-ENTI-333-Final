@@ -12,6 +12,7 @@ import OpenAI from "openai";
 const execAsync = promisify(exec);
 
 const openai = new OpenAI({
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
   apiKey: process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
 });
 
@@ -244,10 +245,10 @@ Create a comprehensive pre-match meditation and mental preparation routine (3-5 
 Write in second person ("you"), calm and encouraging tone, suitable for audio meditation. Make it specific to this athlete and match.`;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
-    max_tokens: 1000,
+    max_completion_tokens: 1500,
   });
 
   return completion.choices[0].message.content || "Unable to generate routine at this time.";
