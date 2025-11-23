@@ -2,6 +2,11 @@ import { type AthleteProfile, type InsertAthleteProfile, type Routine, type Inse
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
+type CreateRoutineData = InsertRoutine & {
+  routineText: string;
+  routineAudioUrl: string | null;
+};
+
 export interface IStorage {
   // Athlete Profile operations
   createAthleteProfile(profile: InsertAthleteProfile): Promise<AthleteProfile>;
@@ -10,7 +15,7 @@ export interface IStorage {
   updateAthleteProfile(id: string, profile: Partial<InsertAthleteProfile>): Promise<AthleteProfile | undefined>;
   
   // Routine operations
-  createRoutine(routine: InsertRoutine): Promise<Routine>;
+  createRoutine(routine: CreateRoutineData): Promise<Routine>;
   getRoutine(id: string): Promise<Routine | undefined>;
   getRoutinesByAthleteProfile(athleteProfileId: string): Promise<Routine[]>;
   getAllRoutines(): Promise<Routine[]>;
@@ -40,7 +45,7 @@ export class DbStorage implements IStorage {
     return updated;
   }
 
-  async createRoutine(routine: InsertRoutine): Promise<Routine> {
+  async createRoutine(routine: CreateRoutineData): Promise<Routine> {
     const [created] = await db.insert(routines).values(routine).returning();
     return created;
   }

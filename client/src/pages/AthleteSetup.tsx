@@ -50,21 +50,19 @@ export default function AthleteSetup() {
 
   const createProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
-      return await apiRequest("/api/athlete-profile", {
-        method: "POST",
-        body: JSON.stringify({
-          heightCm: parseInt(profileData.height),
-          weightKg: parseInt(profileData.weight),
-          age: profileData.age ? parseInt(profileData.age) : null,
-          sport: profileData.sport,
-          position: profileData.position || null,
-          preferredMatchTime: profileData.preferredMatchTime,
-          hydrationHabits: profileData.hydrationHabits,
-          dietType: profileData.dietType || null,
-          mentalTendencies: profileData.mentalTendencies,
-          performsBestWhen: profileData.performsBestWhen,
-        }),
+      const res = await apiRequest("POST", "/api/athlete-profile", {
+        heightCm: parseInt(profileData.height),
+        weightKg: parseInt(profileData.weight),
+        age: profileData.age ? parseInt(profileData.age) : null,
+        sport: profileData.sport,
+        position: profileData.position || null,
+        preferredMatchTime: profileData.preferredMatchTime,
+        hydrationHabits: profileData.hydrationHabits,
+        dietType: profileData.dietType || null,
+        mentalTendencies: profileData.mentalTendencies,
+        performsBestWhen: profileData.performsBestWhen,
       });
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/athlete-profile"] });

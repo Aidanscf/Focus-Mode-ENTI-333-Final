@@ -53,6 +53,8 @@ export const insertAthleteProfileSchema = createInsertSchema(athleteProfiles).om
 export const insertRoutineSchema = createInsertSchema(routines).omit({
   id: true,
   createdAt: true,
+  routineText: true,
+  routineAudioUrl: true,
 }).extend({
   strategyTemplate: z.object({
     primaryPlan: z.string(),

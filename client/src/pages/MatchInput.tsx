@@ -36,7 +36,7 @@ export default function MatchInput() {
   const [selectedMood, setSelectedMood] = useState("");
   const { toast } = useToast();
 
-  const { data: athleteProfile } = useQuery({
+  const { data: athleteProfile } = useQuery<{ id: string }>({
     queryKey: ["/api/athlete-profile"],
   });
 
@@ -64,26 +64,24 @@ export default function MatchInput() {
         throw new Error("No athlete profile found");
       }
       
-      return await apiRequest("/api/routines/generate", {
-        method: "POST",
-        body: JSON.stringify({
-          athleteProfileId: athleteProfile.id,
-          opponentName: matchData.opponentName,
-          opponentStyle: matchData.opponentStyle,
-          matchHistory: matchData.matchHistory || null,
-          strategyTemplate: {
-            primaryPlan: matchData.primaryPlan,
-            opponentTendencies: matchData.opponentTendencies,
-            situationsToAvoid: matchData.situationsToAvoid,
-            strengthsToEmphasize: matchData.strengthsToEmphasize,
-            coachReminders: matchData.coachReminders || undefined,
-          },
-          mood: matchData.mood,
-          energyLevel: matchData.energyLevel,
-          hydrationTodayMl: parseInt(matchData.hydrationToday),
-          matchDuration: matchData.matchDuration,
-        }),
+      const res = await apiRequest("POST", "/api/routines/generate", {
+        athleteProfileId: athleteProfile.id,
+        opponentName: matchData.opponentName,
+        opponentStyle: matchData.opponentStyle,
+        matchHistory: matchData.matchHistory || null,
+        strategyTemplate: {
+          primaryPlan: matchData.primaryPlan,
+          opponentTendencies: matchData.opponentTendencies,
+          situationsToAvoid: matchData.situationsToAvoid,
+          strengthsToEmphasize: matchData.strengthsToEmphasize,
+          coachReminders: matchData.coachReminders || undefined,
+        },
+        mood: matchData.mood,
+        energyLevel: matchData.energyLevel,
+        hydrationTodayMl: parseInt(matchData.hydrationToday),
+        matchDuration: matchData.matchDuration,
       });
+      return await res.json();
     },
     onSuccess: (routine: any) => {
       toast({
