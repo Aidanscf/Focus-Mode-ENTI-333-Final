@@ -1,0 +1,459 @@
+Product Requirements Document (PRD) 
+
+FocusMode — AI Pre-Match Routine Coach 
+
+ 
+
+1. Product Overview 
+
+Product Name: FocusMode 
+ Platform: Web App (Replit) 
+ Owner: Student Product & Engineering Team 
+
+Vision 
+
+Enable athletes to enter their optimal mental and physical readiness state before a match by using AI to deliver a personalized, psychology-based pre-match routine. 
+
+Description 
+
+FocusMode is an AI-powered assistant that generates a personalized 10-minute pre-match routine using an athlete’s profile and match-day text inputs. The system combines mental activation, strategy cues, and basic physiological recommendations into a guided pre-match meditation delivered as both text and audio (via TTS). 
+
+Important MVP Update 
+
+All match-day inputs are text-based only. 
+
+The athlete fills out a structured Strategy Template instead of uploading audio. 
+
+Whisper (audio transcription) is removed from MVP and becomes a Phase 2 upgrade. 
+
+ 
+
+2. Goals & Non-Goals 
+
+2.1 MVP Goals 
+
+Provide athletes with a personalized mental activation routine before competition. 
+
+Collect athlete bio, habits, and mental tendencies to drive personalization. 
+
+Allow athletes to enter opponent info and coach strategy via a structured text template. 
+
+Use GPT-4 to generate a guided routine including: 
+
+Breathing & visualization 
+
+Personalized mantra 
+
+Tactical reminders 
+
+Hydration & carb suggestions 
+
+Motivational closing 
+
+Generate audio meditation using TTS. 
+
+Store athlete profile and previous routines in Replit DB. 
+
+2.2 Non-Goals 
+
+No audio uploads or transcription (Whisper is excluded from MVP). 
+
+No wearable or biometric integration. 
+
+No multi-coach/team dashboard (future consideration). 
+
+No native mobile app. 
+
+ 
+
+3. Target Users 
+
+Primary: Competitive Individual Athletes 
+
+Athletes who: 
+
+Struggle with nerves, focus, or mental readiness 
+
+Want consistent pre-match routines 
+
+Want to reinforce coach strategy before playing 
+
+Secondary: Coaches (Phase 2) 
+
+Coaches who want athletes to: 
+
+Prepare mentally in a systematic way 
+
+Review strategy before matches 
+
+ 
+
+4. User Experience & Workflows 
+
+4.1 Initial Athlete Setup (One-Time Survey) 
+
+Athlete fills out a multi-step survey: 
+
+Biological Information 
+
+Height 
+
+Weight 
+
+Age (optional) 
+
+Sport Profile 
+
+Sport 
+
+Position/role 
+
+Preferred match time (morning/afternoon/evening) 
+
+Hydration & Nutrition Habits 
+
+Typical daily water intake 
+
+Pre-match eating habits 
+
+Mental Tendencies 
+
+“Before matches, I usually feel…” 
+
+“I perform best when I feel…” 
+
+Storage: 
+ All data saved to Replit DB as AthleteProfile. 
+
+ 
+
+4.2 Match-Day Check-In 
+
+Athlete fills out: 
+
+Opponent Information 
+
+Opponent name 
+
+Play style 
+
+Match history (e.g., “Lost last match; weak on defense”) 
+
+Game/Mental Strategy Template (NEW MVP Feature) 
+
+A structured text box with: 
+
+Strategy Template: 
+1. Primary game plan: 
+2. Opponent tendencies to exploit: 
+3. Mistakes / situations to avoid: 
+4. Your strengths to emphasize: 
+5. Key reminders from coach: 
+ 
+
+Current State Inputs 
+
+Mood (chips: anxious, focused, flat, etc.) 
+
+Energy level (slider 1–10) 
+
+Hydration today (ml) 
+
+Estimated match duration (<60, 60–90, >90 mins) 
+
+Action: 
+ “Generate My Pre-Match Routine” 
+
+ 
+
+4.3 AI Routine Generation 
+
+Backend flow: 
+
+Load Athlete Profile 
+
+Combine with: 
+
+Opponent info 
+
+Strategy Template text 
+
+Match-day state 
+
+Run GPT-4 using a structured prompt to produce a routine containing: 
+
+Routine Components 
+
+Breathing & visualization exercise 
+
+Personalized mantra 
+
+Strategy reminders (from the template) 
+
+Hydration & carb recommendations: 
+
+Daily water = weight * 35 ml 
+Pre-match water (2hr before) = weight * 5 ml 
+Carbs = weight * 1g (<90 mins) or 2g (>90 mins) 
+ 
+
+Motivational closing message 
+
+Convert routine into audio using TTS (gTTS or ElevenLabs) 
+
+Store routine in DB with timestamp and opponent name. 
+
+ 
+
+4.4 Output Experience 
+
+The results page displays: 
+
+1. Guided mental routine (text) 
+
+Sections displayed as cards with icons. 
+
+2. Audio Meditation Player 
+
+Play/pause button 
+
+Minimal waveform / progress bar 
+
+3. Key visual elements 
+
+Big centered mantra 
+
+Hydration/carb cue 
+
+Strategy bullet list 
+
+4. Actions 
+
+“Replay Audio” 
+
+“Save Routine” (automatic) 
+
+“Return Home” 
+
+ 
+
+4.5 Knowledge Articles (Phase 2) 
+
+Optional “Learn” tab with basic sports psychology articles: 
+
+What is visualization? 
+
+Developing a pre-performance routine 
+
+Handling pre-match anxiety 
+
+Static markdown or pre-written content. 
+
+ 
+
+5. Functional Requirements 
+
+5.1 Core MVP Requirements 
+
+FR1 – Athlete Profile 
+
+User can complete an initial survey. 
+
+System stores profile in Replit DB and auto-loads it on later visits. 
+
+FR2 – Match-Day Input Form 
+
+Collects opponent information. 
+
+Collects strategy template text fields. 
+
+Captures mood, energy, hydration, and match duration. 
+
+FR3 – Routine Generation (GPT-4) 
+
+Routine must follow 5-section structure. 
+
+Hydration/carb formulas must be applied automatically. 
+
+Output must be calm, coaching, and structured. 
+
+FR4 – Audio Generation (TTS) 
+
+Convert full routine text to audio file. 
+
+Provide URL/path for user playback. 
+
+FR5 – Routine Storage and History 
+
+Save text + audio metadata for each routine. 
+
+Display last several routines on Home screen. 
+
+ 
+
+5.2 Non-MVP Requirements 
+
+Phase 2 Enhancements: 
+
+Whisper audio transcription 
+
+Coach audio message uploads 
+
+Wearable integrations 
+
+More advanced analytics dashboard 
+
+ 
+
+6. Non-Functional Requirements 
+
+Routine generation under 15 seconds 
+
+API errors handled with friendly messages 
+
+Mobile-responsive UI 
+
+Modern, calm, minimal design 
+
+Secure handling of API keys (backend only) 
+
+ 
+
+7. Architecture & Tech Stack 
+
+Frontend 
+
+React 
+
+Tailwind CSS 
+
+Pages: 
+
+Home 
+
+Athlete Setup 
+
+Match-Day Form 
+
+Strategy Template 
+
+Routine Output + Audio Player 
+
+(Later) Knowledge Articles 
+
+ 
+
+Backend 
+
+Flask or FastAPI 
+
+Endpoints: 
+
+POST /profile 
+
+GET /profile 
+
+POST /match (text-only match data) 
+
+GET /routines 
+
+ 
+
+AI Services 
+
+MVP 
+
+GPT-4 (routine) 
+
+gTTS or ElevenLabs (audio) 
+
+Phase 2 
+
+Whisper (audio transcription) 
+
+ 
+
+Storage 
+
+Replit DB (simple JSON-like store): 
+
+AthleteProfile 
+
+MatchSession 
+
+RoutineHistory 
+
+ 
+
+8. Data Models 
+
+AthleteProfile 
+
+{ 
+  "height_cm": 180, 
+  "weight_kg": 75, 
+  "age": 22, 
+  "sport": "Squash", 
+  "position": "N/A", 
+  "preferred_match_time": "evening", 
+  "diet_type": "omnivore", 
+  "hydration_habits": "2L/day", 
+  "mental_tendencies": "I get anxious before matches" 
+} 
+ 
+
+MatchSession 
+
+{ 
+  "session_id": "uuid", 
+  "timestamp": "ISO datetime", 
+  "opponent_name": "Carlos Vega", 
+  "rival_style": "Fast-paced", 
+  "rival_history": "Lost last 2 matches", 
+  "strategy_template": { 
+    "primary_plan": "...", 
+    "opponent_tendencies": "...", 
+    "avoid": "...", 
+    "strengths": "...", 
+    "coach_reminders": "..." 
+  }, 
+  "mood": "focused", 
+  "energy_level": 7, 
+  "hydration_today_ml": 600, 
+  "match_duration_min": 90, 
+  "routine_text": "Full AI-generated routine", 
+  "routine_audio_url": "/audio/123.mp3" 
+} 
+ 
+
+ 
+
+9. Risks & Open Questions 
+
+Risks 
+
+Users may provide low-quality or vague strategy input → routine less effective. 
+
+TTS voice quality varies (ElevenLabs recommended). 
+
+GPT-4 cost considerations for frequent use. 
+
+Open Questions 
+
+Should the strategy template be customizable in future versions? 
+
+Should there be pre-made strategy examples by sport? 
+
+ 
+
+10. Success Metrics 
+
+≥ 70% of users produce at least one routine after setup 
+
+≥ 50% come back for at least 2 match sessions 
+
+Average generation time < 15 seconds 
+
+User feedback ≥ 4/5: “Helped me feel more prepared” 
+
+ 
