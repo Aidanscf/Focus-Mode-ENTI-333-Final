@@ -1,9 +1,30 @@
 import { Link, useLocation } from "wouter";
 import { Brain, Home, History, BookOpen, User, Zap, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout", {});
+    },
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.href = "/";
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Logout failed",
+        variant: "destructive",
+      });
+    },
+  });
 
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/" },
@@ -42,7 +63,8 @@ export default function Sidebar() {
       </nav>
 
       <button
-        onClick={() => window.location.href = "/api/logout"}
+        onClick={() => logoutMutation.mutate()}
+        disabled={logoutMutation.isPending}
         className="flex flex-col items-center justify-center w-14 h-14 rounded-xl text-muted-foreground hover-elevate active-elevate-2"
         data-testid="button-logout"
       >

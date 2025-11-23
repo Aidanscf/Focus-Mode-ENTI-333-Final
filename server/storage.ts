@@ -1,4 +1,4 @@
-import { type AthleteProfile, type InsertAthleteProfile, type Routine, type InsertRoutine, type User, type UpsertUser, athleteProfiles, routines, users } from "@shared/schema";
+import { type AthleteProfile, type InsertAthleteProfile, type Routine, type InsertRoutine, type User, type InsertUser, athleteProfiles, routines, users } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -8,9 +8,10 @@ type CreateRoutineData = InsertRoutine & {
 };
 
 export interface IStorage {
-  // User operations (required for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
   
   // Athlete Profile operations
   createAthleteProfile(userId: string, profile: InsertAthleteProfile): Promise<AthleteProfile>;
@@ -26,24 +27,19 @@ export interface IStorage {
 }
 
 export class DbStorage implements IStorage {
-  // User operations (required for Replit Auth)
+  // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
 

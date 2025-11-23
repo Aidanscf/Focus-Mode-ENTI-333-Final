@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAthleteProfileSchema, insertRoutineSchema } from "@shared/schema";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./localAuth";
 import { exec } from "child_process";
 import { promisify } from "util";
 import path from "path";
@@ -16,15 +16,14 @@ const openai = new OpenAI({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication (from blueprint:javascript_log_in_with_replit)
+  // Setup authentication
   await setupAuth(app);
 
   // Auth Routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      const user = req.user;
+      res.json({ id: user.id, email: user.email });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -34,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Athlete Profile Routes (protected)
   app.get("/api/athlete-profile", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const profile = await storage.getAthleteProfileByUserId(userId);
       if (!profile) {
         return res.status(404).json({ message: "No athlete profile found" });
@@ -47,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/athlete-profile", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validated = insertAthleteProfileSchema.parse(req.body);
       const profile = await storage.createAthleteProfile(userId, validated);
       res.status(201).json(profile);
@@ -59,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/athlete-profile/:id", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       // Verify the profile belongs to the user
       const existingProfile = await storage.getAthleteProfile(id);
@@ -80,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Routine Routes (protected)
   app.get("/api/routines", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const athleteProfile = await storage.getAthleteProfileByUserId(userId);
       
       if (!athleteProfile) {
@@ -97,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/routines/:id", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const routine = await storage.getRoutine(id);
       
       if (!routine) {
@@ -118,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/routines/generate", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validated = insertRoutineSchema.parse(req.body);
       
       // Get athlete profile and verify ownership
