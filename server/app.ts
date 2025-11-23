@@ -8,6 +8,7 @@ import express, {
 } from "express";
 
 import { registerRoutes } from "./routes";
+import path from "path";
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -21,6 +22,8 @@ export function log(message: string, source = "express") {
 }
 
 export const app = express();
+
+app.use("/audio", express.static(path.join(process.cwd(), "public", "audio")));
 
 declare module 'http' {
   interface IncomingMessage {
