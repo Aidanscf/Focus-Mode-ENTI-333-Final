@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "postgresql-16", "python-3.11"]
+modules = ["nodejs-20", "web", "python-3.11", "postgresql-16"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
@@ -16,12 +16,12 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 36865
-externalPort = 3000
+localPort = 35321
+externalPort = 3001
 
 [[ports]]
-localPort = 44413
-externalPort = 3001
+localPort = 36865
+externalPort = 3000
 
 [env]
 PORT = "5000"
