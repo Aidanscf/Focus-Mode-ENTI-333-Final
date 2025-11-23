@@ -1,4 +1,4 @@
-import { type AthleteProfile, type InsertAthleteProfile, type Routine, type InsertRoutine, athleteProfiles, routines } from "@shared/schema";
+import { type AthleteProfile, type InsertAthleteProfile, type Routine, type InsertRoutine, type User, type UpsertUser, athleteProfiles, routines, users } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -8,10 +8,14 @@ type CreateRoutineData = InsertRoutine & {
 };
 
 export interface IStorage {
+  // User operations (required for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
   // Athlete Profile operations
-  createAthleteProfile(profile: InsertAthleteProfile): Promise<AthleteProfile>;
+  createAthleteProfile(userId: string, profile: InsertAthleteProfile): Promise<AthleteProfile>;
   getAthleteProfile(id: string): Promise<AthleteProfile | undefined>;
-  getFirstAthleteProfile(): Promise<AthleteProfile | undefined>;
+  getAthleteProfileByUserId(userId: string): Promise<AthleteProfile | undefined>;
   updateAthleteProfile(id: string, profile: Partial<InsertAthleteProfile>): Promise<AthleteProfile | undefined>;
   
   // Routine operations
@@ -22,8 +26,30 @@ export interface IStorage {
 }
 
 export class DbStorage implements IStorage {
-  async createAthleteProfile(profile: InsertAthleteProfile): Promise<AthleteProfile> {
-    const [created] = await db.insert(athleteProfiles).values(profile).returning();
+  // User operations (required for Replit Auth)
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Athlete Profile operations
+  async createAthleteProfile(userId: string, profile: InsertAthleteProfile): Promise<AthleteProfile> {
+    const [created] = await db.insert(athleteProfiles).values({ ...profile, userId }).returning();
     return created;
   }
 
@@ -32,8 +58,8 @@ export class DbStorage implements IStorage {
     return profile;
   }
 
-  async getFirstAthleteProfile(): Promise<AthleteProfile | undefined> {
-    const [profile] = await db.select().from(athleteProfiles).limit(1);
+  async getAthleteProfileByUserId(userId: string): Promise<AthleteProfile | undefined> {
+    const [profile] = await db.select().from(athleteProfiles).where(eq(athleteProfiles.userId, userId));
     return profile;
   }
 

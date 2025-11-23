@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAthleteProfileSchema, insertRoutineSchema } from "@shared/schema";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { exec } from "child_process";
 import { promisify } from "util";
 import path from "path";
@@ -15,10 +16,26 @@ const openai = new OpenAI({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Athlete Profile Routes
-  app.get("/api/athlete-profile", async (_req, res) => {
+  // Setup authentication (from blueprint:javascript_log_in_with_replit)
+  await setupAuth(app);
+
+  // Auth Routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const profile = await storage.getFirstAthleteProfile();
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Athlete Profile Routes (protected)
+  app.get("/api/athlete-profile", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getAthleteProfileByUserId(userId);
       if (!profile) {
         return res.status(404).json({ message: "No athlete profile found" });
       }
@@ -28,19 +45,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/athlete-profile", async (req, res) => {
+  app.post("/api/athlete-profile", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const validated = insertAthleteProfileSchema.parse(req.body);
-      const profile = await storage.createAthleteProfile(validated);
+      const profile = await storage.createAthleteProfile(userId, validated);
       res.status(201).json(profile);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  app.patch("/api/athlete-profile/:id", async (req, res) => {
+  app.patch("/api/athlete-profile/:id", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Verify the profile belongs to the user
+      const existingProfile = await storage.getAthleteProfile(id);
+      if (!existingProfile || existingProfile.userId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
       const profile = await storage.updateAthleteProfile(id, req.body);
       if (!profile) {
         return res.status(404).json({ message: "Profile not found" });
@@ -51,37 +77,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Routine Routes
-  app.get("/api/routines", async (_req, res) => {
+  // Routine Routes (protected)
+  app.get("/api/routines", isAuthenticated, async (req: any, res) => {
     try {
-      const routines = await storage.getAllRoutines();
+      const userId = req.user.claims.sub;
+      const athleteProfile = await storage.getAthleteProfileByUserId(userId);
+      
+      if (!athleteProfile) {
+        return res.json([]);
+      }
+      
+      const routines = await storage.getRoutinesByAthleteProfile(athleteProfile.id);
       res.json(routines);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get("/api/routines/:id", async (req, res) => {
+  app.get("/api/routines/:id", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
+      const userId = req.user.claims.sub;
       const routine = await storage.getRoutine(id);
+      
       if (!routine) {
         return res.status(404).json({ message: "Routine not found" });
       }
+      
+      // Verify the routine belongs to the user's athlete profile
+      const athleteProfile = await storage.getAthleteProfile(routine.athleteProfileId);
+      if (!athleteProfile || athleteProfile.userId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
       res.json(routine);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.post("/api/routines/generate", async (req, res) => {
+  app.post("/api/routines/generate", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const validated = insertRoutineSchema.parse(req.body);
       
-      // Get athlete profile
+      // Get athlete profile and verify ownership
       const athleteProfile = await storage.getAthleteProfile(validated.athleteProfileId);
       if (!athleteProfile) {
         return res.status(404).json({ message: "Athlete profile not found" });
+      }
+      
+      if (athleteProfile.userId !== userId) {
+        return res.status(403).json({ message: "Forbidden" });
       }
 
       // Calculate hydration and carb recommendations
