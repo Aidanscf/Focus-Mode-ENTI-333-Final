@@ -10,6 +10,9 @@ import { Slider } from "@/components/ui/slider";
 import MoodChips from "@/components/MoodChips";
 import { useLocation } from "wouter";
 import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const matchInputSchema = z.object({
   opponentName: z.string().min(1, "Opponent name is required"),
@@ -31,6 +34,11 @@ const moods = ["Anxious", "Focused", "Flat", "Energized", "Nervous", "Confident"
 export default function MatchInput() {
   const [, setLocation] = useLocation();
   const [selectedMood, setSelectedMood] = useState("");
+  const { toast } = useToast();
+
+  const { data: athleteProfile } = useQuery({
+    queryKey: ["/api/athlete-profile"],
+  });
 
   const form = useForm({
     resolver: zodResolver(matchInputSchema),
@@ -50,10 +58,51 @@ export default function MatchInput() {
     },
   });
 
+  const generateRoutineMutation = useMutation({
+    mutationFn: async (matchData: any) => {
+      if (!athleteProfile?.id) {
+        throw new Error("No athlete profile found");
+      }
+      
+      return await apiRequest("/api/routines/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          athleteProfileId: athleteProfile.id,
+          opponentName: matchData.opponentName,
+          opponentStyle: matchData.opponentStyle,
+          matchHistory: matchData.matchHistory || null,
+          strategyTemplate: {
+            primaryPlan: matchData.primaryPlan,
+            opponentTendencies: matchData.opponentTendencies,
+            situationsToAvoid: matchData.situationsToAvoid,
+            strengthsToEmphasize: matchData.strengthsToEmphasize,
+            coachReminders: matchData.coachReminders || undefined,
+          },
+          mood: matchData.mood,
+          energyLevel: matchData.energyLevel,
+          hydrationTodayMl: parseInt(matchData.hydrationToday),
+          matchDuration: matchData.matchDuration,
+        }),
+      });
+    },
+    onSuccess: (routine: any) => {
+      toast({
+        title: "Routine generated",
+        description: "Your personalized pre-match routine is ready",
+      });
+      setLocation(`/routine/${routine.id}`);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate routine",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: any) => {
-    console.log("Match data submitted:", data);
-    //todo: remove mock functionality - send to backend to generate routine
-    setLocation("/routine/preview");
+    generateRoutineMutation.mutate(data);
   };
 
   return (
@@ -289,9 +338,10 @@ export default function MatchInput() {
             type="submit" 
             size="lg" 
             className="w-full h-14 text-lg"
+            disabled={generateRoutineMutation.isPending}
             data-testid="button-generate"
           >
-            Generate My Pre-Match Routine
+            {generateRoutineMutation.isPending ? "Generating Routine..." : "Generate My Pre-Match Routine"}
           </Button>
         </form>
       </Form>

@@ -10,6 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProgressSteps from "@/components/ProgressSteps";
 import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const stepSchemas = [
   z.object({
@@ -38,10 +41,46 @@ export default function AthleteSetup() {
   const [currentStep, setCurrentStep] = useState(0);
   const [, setLocation] = useLocation();
   const [formData, setFormData] = useState<any>({});
+  const { toast } = useToast();
 
   const form = useForm({
     resolver: zodResolver(stepSchemas[currentStep]),
     defaultValues: formData,
+  });
+
+  const createProfileMutation = useMutation({
+    mutationFn: async (profileData: any) => {
+      return await apiRequest("/api/athlete-profile", {
+        method: "POST",
+        body: JSON.stringify({
+          heightCm: parseInt(profileData.height),
+          weightKg: parseInt(profileData.weight),
+          age: profileData.age ? parseInt(profileData.age) : null,
+          sport: profileData.sport,
+          position: profileData.position || null,
+          preferredMatchTime: profileData.preferredMatchTime,
+          hydrationHabits: profileData.hydrationHabits,
+          dietType: profileData.dietType || null,
+          mentalTendencies: profileData.mentalTendencies,
+          performsBestWhen: profileData.performsBestWhen,
+        }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/athlete-profile"] });
+      toast({
+        title: "Profile created",
+        description: "Your athlete profile has been saved successfully",
+      });
+      setLocation("/match-input");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save profile",
+        variant: "destructive",
+      });
+    },
   });
 
   const onSubmit = (data: any) => {
@@ -52,9 +91,7 @@ export default function AthleteSetup() {
       setCurrentStep(currentStep + 1);
       form.reset(newFormData);
     } else {
-      console.log("Profile completed:", newFormData);
-      //todo: remove mock functionality - save to backend
-      setLocation("/match-input");
+      createProfileMutation.mutate(newFormData);
     }
   };
 
@@ -252,12 +289,23 @@ export default function AthleteSetup() {
 
               <div className="flex gap-4 pt-4">
                 {currentStep > 0 && (
-                  <Button type="button" variant="outline" onClick={handleBack} data-testid="button-back">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleBack} 
+                    disabled={createProfileMutation.isPending}
+                    data-testid="button-back"
+                  >
                     Back
                   </Button>
                 )}
-                <Button type="submit" className="flex-1" data-testid="button-next">
-                  {currentStep === steps.length - 1 ? "Complete Setup" : "Next"}
+                <Button 
+                  type="submit" 
+                  className="flex-1" 
+                  disabled={createProfileMutation.isPending}
+                  data-testid="button-next"
+                >
+                  {createProfileMutation.isPending ? "Saving..." : currentStep === steps.length - 1 ? "Complete Setup" : "Next"}
                 </Button>
               </div>
             </form>

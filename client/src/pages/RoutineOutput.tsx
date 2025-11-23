@@ -2,31 +2,56 @@ import { Button } from "@/components/ui/button";
 import AudioPlayer from "@/components/AudioPlayer";
 import RoutineCard from "@/components/RoutineCard";
 import NutritionCard from "@/components/NutritionCard";
-import { Wind, Target, Flame, Droplet, Wheat } from "lucide-react";
-import { useLocation } from "wouter";
+import { Wind, Target, Flame, Droplet, Wheat, Loader2 } from "lucide-react";
+import { useLocation, useParams } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import heroGradient from "@assets/generated_images/hero_meditation_gradient_background.png";
 
 export default function RoutineOutput() {
   const [, setLocation] = useLocation();
+  const { id } = useParams();
 
-  //todo: remove mock functionality - replace with actual generated routine
-  const routine = {
-    mantra: "I am calm, focused, and ready. This is my moment.",
-    breathing: "Close your eyes. Inhale deeply for 4 counts through your nose. Hold for 4 counts. Exhale slowly for 6 counts through your mouth. Feel tension leaving your shoulders. Repeat 5 times. With each breath, feel yourself settling into calm readiness.",
-    strategy: [
-      "Control the pace with variety",
-      "Exploit opponent's weak backhand under pressure",
-      "Avoid long baseline rallies",
-      "Emphasize your strong forehand and court coverage",
-      "Stay patient and trust your training"
-    ],
-    hydration: {
-      daily: "2625 ml",
-      preMarch: "375 ml"
+  const { data: routine, isLoading } = useQuery({
+    queryKey: ["/api/routines", id],
+    queryFn: async () => {
+      const res = await fetch(`/api/routines/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch routine");
+      return res.json();
     },
-    carbs: "75 g",
-    motivation: "You've prepared for this. Your training has built the foundation. Trust your instincts, play your game, and leave it all on the court. You're ready."
-  };
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!routine) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold mb-4">Routine not found</h1>
+          <Button onClick={() => setLocation("/")}>Return Home</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const routineLines = routine.routineText.split('\n').filter((line: string) => line.trim());
+  const mantra = routineLines.find((line: string) => 
+    line.toLowerCase().includes('mantra') || 
+    line.toLowerCase().includes('affirmation')
+  ) || routineLines[0];
+  
+  const strategyLines = routine.strategyTemplate ? [
+    routine.strategyTemplate.primaryPlan,
+    routine.strategyTemplate.opponentTendencies,
+    `Avoid: ${routine.strategyTemplate.situationsToAvoid}`,
+    `Emphasize: ${routine.strategyTemplate.strengthsToEmphasize}`,
+    routine.strategyTemplate.coachReminders || "",
+  ].filter(Boolean) : [];
 
   return (
     <div className="min-h-screen">
@@ -39,54 +64,50 @@ export default function RoutineOutput() {
         }}
       >
         <div className="text-center px-4 py-16">
-          <h2 className="font-display font-medium text-xl text-white/80 mb-4">Your Mantra</h2>
+          <h2 className="font-display font-medium text-xl text-white/80 mb-4">Match vs {routine.opponentName}</h2>
           <p className="font-display font-semibold text-3xl md:text-5xl italic text-white max-w-3xl mx-auto leading-relaxed">
-            "{routine.mantra}"
+            {mantra}
           </p>
         </div>
       </section>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl space-y-8">
-        <AudioPlayer />
+        {routine.routineAudioUrl && <AudioPlayer audioUrl={routine.routineAudioUrl} />}
 
         <div className="space-y-6">
           <h2 className="font-display font-semibold text-3xl text-center mb-8">Your Pre-Match Routine</h2>
 
           <RoutineCard
-            title="Breathing & Visualization"
-            content={routine.breathing}
+            title="Full Routine"
+            content={routine.routineText}
             icon={Wind}
           />
 
-          <RoutineCard
-            title="Strategy Reminders"
-            content={routine.strategy}
-            icon={Target}
-            variant="highlight"
-          />
+          {strategyLines.length > 0 && (
+            <RoutineCard
+              title="Strategy Reminders"
+              content={strategyLines}
+              icon={Target}
+              variant="highlight"
+            />
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <NutritionCard
               title="Hydration"
-              value={routine.hydration.preMarch}
+              value={routine.hydrationTodayMl.toString()}
               unit="ml"
               icon={Droplet}
-              description="Drink 2 hours before match"
+              description="Recommended for today"
             />
             <NutritionCard
-              title="Carbohydrates"
-              value={routine.carbs}
-              unit="g"
-              icon={Wheat}
-              description="1-2 hours before match"
+              title="Energy Level"
+              value={routine.energyLevel.toString()}
+              unit="/10"
+              icon={Flame}
+              description={`Current: ${routine.mood}`}
             />
           </div>
-
-          <RoutineCard
-            title="Motivation"
-            content={routine.motivation}
-            icon={Flame}
-          />
         </div>
 
         <div className="flex gap-4 pt-8">
@@ -100,13 +121,10 @@ export default function RoutineOutput() {
           </Button>
           <Button 
             className="flex-1"
-            onClick={() => {
-              console.log("Routine saved");
-              setLocation("/");
-            }}
+            onClick={() => setLocation("/history")}
             data-testid="button-save"
           >
-            Save Routine
+            View All Routines
           </Button>
         </div>
       </div>
