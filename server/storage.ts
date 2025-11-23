@@ -1,38 +1,67 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { type AthleteProfile, type InsertAthleteProfile, type Routine, type InsertRoutine, athleteProfiles, routines } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Athlete Profile operations
+  createAthleteProfile(profile: InsertAthleteProfile): Promise<AthleteProfile>;
+  getAthleteProfile(id: string): Promise<AthleteProfile | undefined>;
+  getFirstAthleteProfile(): Promise<AthleteProfile | undefined>;
+  updateAthleteProfile(id: string, profile: Partial<InsertAthleteProfile>): Promise<AthleteProfile | undefined>;
+  
+  // Routine operations
+  createRoutine(routine: InsertRoutine): Promise<Routine>;
+  getRoutine(id: string): Promise<Routine | undefined>;
+  getRoutinesByAthleteProfile(athleteProfileId: string): Promise<Routine[]>;
+  getAllRoutines(): Promise<Routine[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DbStorage implements IStorage {
+  async createAthleteProfile(profile: InsertAthleteProfile): Promise<AthleteProfile> {
+    const [created] = await db.insert(athleteProfiles).values(profile).returning();
+    return created;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getAthleteProfile(id: string): Promise<AthleteProfile | undefined> {
+    const [profile] = await db.select().from(athleteProfiles).where(eq(athleteProfiles.id, id));
+    return profile;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getFirstAthleteProfile(): Promise<AthleteProfile | undefined> {
+    const [profile] = await db.select().from(athleteProfiles).limit(1);
+    return profile;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateAthleteProfile(id: string, profile: Partial<InsertAthleteProfile>): Promise<AthleteProfile | undefined> {
+    const [updated] = await db.update(athleteProfiles)
+      .set({ ...profile, updatedAt: new Date() })
+      .where(eq(athleteProfiles.id, id))
+      .returning();
+    return updated;
+  }
+
+  async createRoutine(routine: InsertRoutine): Promise<Routine> {
+    const [created] = await db.insert(routines).values(routine).returning();
+    return created;
+  }
+
+  async getRoutine(id: string): Promise<Routine | undefined> {
+    const [routine] = await db.select().from(routines).where(eq(routines.id, id));
+    return routine;
+  }
+
+  async getRoutinesByAthleteProfile(athleteProfileId: string): Promise<Routine[]> {
+    return await db.select()
+      .from(routines)
+      .where(eq(routines.athleteProfileId, athleteProfileId))
+      .orderBy(desc(routines.createdAt));
+  }
+
+  async getAllRoutines(): Promise<Routine[]> {
+    return await db.select()
+      .from(routines)
+      .orderBy(desc(routines.createdAt));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DbStorage();
