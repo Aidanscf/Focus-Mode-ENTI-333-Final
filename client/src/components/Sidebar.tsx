@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Brain, Home, History, BookOpen, User, Zap } from "lucide-react";
+import { Brain, Home, History, BookOpen, User, Zap, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
@@ -21,7 +21,7 @@ export default function Sidebar() {
         </a>
       </Link>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2 flex-1">
         {navItems.map((item) => {
           const isActive = location === item.path;
           return (
@@ -40,6 +40,15 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      <button
+        onClick={() => window.location.href = "/api/logout"}
+        className="flex flex-col items-center justify-center w-14 h-14 rounded-xl text-muted-foreground hover-elevate active-elevate-2"
+        data-testid="button-logout"
+      >
+        <LogOut className="h-5 w-5" />
+        <span className="text-[10px] mt-1">Logout</span>
+      </button>
     </aside>
   );
 }
