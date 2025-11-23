@@ -140,26 +140,27 @@ export default function Home() {
               </div>
               <Card className="divide-y">
                 {upcomingMatches.map((match, i) => (
-                  <div 
-                    key={i} 
-                    className="flex items-center justify-between p-4 hover-elevate cursor-pointer"
-                    data-testid={`session-${i}`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-red-500' : 'bg-muted'}`} />
-                      <div>
-                        <h4 className="font-medium">{match.title}</h4>
-                        <p className="text-sm text-muted-foreground">{match.coach}</p>
+                  <Link key={i} href="/match-input">
+                    <div 
+                      className="flex items-center justify-between p-4 hover-elevate cursor-pointer"
+                      data-testid={`session-${i}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-red-500' : 'bg-muted'}`} />
+                        <div>
+                          <h4 className="font-medium">{match.title}</h4>
+                          <p className="text-sm text-muted-foreground">{match.coach}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>{match.duration}</span>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{match.duration}</span>
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </div>
+                  </Link>
                 ))}
               </Card>
             </div>
