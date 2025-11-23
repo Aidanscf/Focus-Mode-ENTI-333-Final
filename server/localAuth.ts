@@ -118,12 +118,14 @@ export async function setupAuth(app: Express) {
 
       req.logIn(user, (err) => {
         if (err) {
-          return res.status(500).json({ message: "Signup successful but login failed" });
+          console.error("Login after signup error:", err);
+          return res.status(500).json({ message: "Signup successful but login failed", error: err.message });
         }
         return res.json({ id: user.id, email: user.email });
       });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error("Signup error:", error);
+      res.status(500).json({ message: error.message, stack: error.stack });
     }
   });
 
