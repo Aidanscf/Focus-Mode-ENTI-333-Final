@@ -30,6 +30,7 @@ export type InsertUser = typeof users.$inferInsert;
 export const athleteProfiles = pgTable("athlete_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
   heightCm: integer("height_cm").notNull(),
   weightKg: integer("weight_kg").notNull(),
   age: integer("age"),

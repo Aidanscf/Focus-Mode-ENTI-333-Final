@@ -1,52 +1,31 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Bell, User, Play, Clock, ChevronRight } from "lucide-react";
+import { Search, Bell, Target, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { format } from "date-fns";
+import type { AthleteProfile, Routine } from "@shared/types";
 
 export default function Home() {
-  //todo: remove mock functionality - replace with actual user data
-  const athleteName = "Jordan Mitchell";
-  
-  //todo: remove mock functionality - replace with actual routines
-  const activeRoutines = [
-    { 
-      id: "1", 
-      title: "Championship Final Prep", 
-      opponent: "vs Carlos Vega",
-      progress: 75,
-      color: "from-blue-500 to-blue-600",
-      status: "In Progress"
-    },
-    { 
-      id: "2", 
-      title: "Semi-Final Mental Reset", 
-      opponent: "vs Sarah Chen",
-      progress: 100,
-      color: "from-orange-500 to-red-500",
-      status: "Completed"
-    },
-    { 
-      id: "3", 
-      title: "Quarter-Final Focus", 
-      opponent: "vs Mike Torres",
-      progress: 45,
-      color: "from-purple-500 to-purple-600",
-      status: "In Progress"
-    },
-  ];
+  const { data: profile } = useQuery<AthleteProfile>({
+    queryKey: ["/api/athlete-profile"],
+  });
 
-  const upcomingMatches = [
-    { title: "Pre-Match Breathing Exercise", coach: "Alex Chen", duration: "5 min" },
-    { title: "Strategy Visualization", coach: "Mia Roberts", duration: "8 min" },
-    { title: "Performance Meditation", coach: "Priya Kapoor", duration: "10 min" },
-    { title: "Mental Rehearsal Session", coach: "Samuel Wright", duration: "12 min" },
-  ];
+  const { data: routines, isLoading: routinesLoading } = useQuery<Routine[]>({
+    queryKey: ["/api/routines"],
+  });
 
-  const categories = ["All Routines", "Mental", "Physical", "Strategy", "Recovery"];
+  const athleteName = profile?.name || "Athlete";
+  const initials = athleteName
+    .trim()
+    .split(/\s+/)
+    .filter(n => n.length > 0)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || "AT";
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,10 +48,10 @@ export default function Home() {
             </Button>
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary text-primary-foreground">JM</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground" data-testid="avatar-initials">{initials}</AvatarFallback>
               </Avatar>
               <div className="text-sm">
-                <p className="font-semibold">{athleteName}</p>
+                <p className="font-semibold" data-testid="text-username">{athleteName}</p>
               </div>
             </div>
           </div>
@@ -81,121 +60,78 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="p-8">
-        {/* Category Filters */}
-        <div className="flex items-center gap-3 mb-6">
-          {categories.map((cat, i) => (
-            <Button
-              key={cat}
-              variant={i === 0 ? "default" : "outline"}
-              size="sm"
-              className="rounded-full"
-              data-testid={`button-category-${cat.toLowerCase().replace(' ', '-')}`}
-            >
-              {cat}
-            </Button>
-          ))}
-        </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h2 className="font-display font-bold text-3xl mb-2">Welcome back, {athleteName}!</h2>
+            <p className="text-muted-foreground">Track your mental preparation and build winning routines</p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            {/* My Routines */}
-            <div>
-              <h2 className="font-display font-bold text-2xl mb-4">My Routines</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {activeRoutines.map((routine) => (
+          {/* My Routines */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-display font-bold text-2xl">My Routines</h3>
+              <Link href="/history">
+                <Button variant="ghost" className="text-primary" data-testid="button-view-all-routines">
+                  View all
+                </Button>
+              </Link>
+            </div>
+
+            {routinesLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : routines && routines.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {routines.slice(0, 3).map((routine) => (
                   <Link key={routine.id} href={`/routine/${routine.id}`}>
-                    <Card 
-                      className={`p-5 bg-gradient-to-br ${routine.color} text-white hover-elevate cursor-pointer overflow-hidden relative`}
-                      data-testid={`card-routine-${routine.id}`}
-                    >
-                      <div className="relative z-10">
-                        <Badge variant="secondary" className="mb-3 bg-white/20 text-white border-0">
-                          {routine.status}
-                        </Badge>
-                        <h3 className="font-semibold text-lg mb-1">{routine.title}</h3>
-                        <p className="text-sm text-white/90 mb-4">{routine.opponent}</p>
-                        <div className="space-y-2">
-                          <Progress value={routine.progress} className="h-2 bg-white/20" />
-                          <div className="flex items-center justify-between text-xs">
-                            <span>{routine.progress}% Complete</span>
-                            <Button size="sm" variant="secondary" className="h-7 rounded-full bg-lime-400 text-black hover:bg-lime-500">
-                              {routine.progress === 100 ? "Review" : "Continue"}
-                            </Button>
-                          </div>
+                    <Card className="p-6 hover-elevate cursor-pointer" data-testid={`card-routine-${routine.id}`}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Target className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-muted-foreground">{format(new Date(routine.createdAt), 'MMM dd, yyyy')}</p>
                         </div>
                       </div>
+                      <h4 className="font-semibold text-lg mb-2">vs {routine.opponentName}</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{routine.routineText.substring(0, 100)}...</p>
                     </Card>
                   </Link>
                 ))}
               </div>
-            </div>
-
-            {/* Upcoming Sessions */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-bold text-2xl">My Next Sessions</h2>
-                <Button variant="ghost" className="text-primary" data-testid="button-view-all">
-                  View all sessions
-                </Button>
-              </div>
-              <Card className="divide-y">
-                {upcomingMatches.map((match, i) => (
-                  <Link key={i} href="/match-input">
-                    <div 
-                      className="flex items-center justify-between p-4 hover-elevate cursor-pointer"
-                      data-testid={`session-${i}`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-red-500' : 'bg-muted'}`} />
-                        <div>
-                          <h4 className="font-medium">{match.title}</h4>
-                          <p className="text-sm text-muted-foreground">{match.coach}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Clock className="h-4 w-4" />
-                          <span>{match.duration}</span>
-                        </div>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    </div>
+            ) : (
+              <Card className="p-12 text-center" data-testid="empty-state-routines">
+                <div className="max-w-md mx-auto space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                    <Target className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="font-display font-semibold text-xl">No routines yet</h3>
+                  <p className="text-muted-foreground">Create your first pre-match mental preparation routine to get started</p>
+                  <Link href="/match-input">
+                    <Button size="lg" className="mt-4" data-testid="button-create-first-routine">
+                      Create Your First Routine
+                    </Button>
                   </Link>
-                ))}
+                </div>
               </Card>
-            </div>
+            )}
           </div>
 
-          {/* Right Sidebar - Recommended */}
-          <div>
-            <h3 className="font-display font-semibold text-lg mb-4">Recommended for You</h3>
-            <Card className="p-6 bg-gradient-to-br from-lime-400 to-lime-500 text-black">
-              <Badge className="mb-4 bg-black text-white">New</Badge>
-              <h3 className="font-display font-bold text-2xl mb-2">
-                Advanced Visualization for Competition
-              </h3>
-              <p className="text-sm mb-4 text-black/80">
-                Master elite-level mental imagery techniques
-              </p>
-              <div className="flex items-center gap-2 mb-6">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-black/10">AC</AvatarFallback>
-                </Avatar>
-                <Avatar className="h-8 w-8 -ml-3">
-                  <AvatarFallback className="bg-black/10">MR</AvatarFallback>
-                </Avatar>
-                <Avatar className="h-8 w-8 -ml-3">
-                  <AvatarFallback className="bg-black/10">PK</AvatarFallback>
-                </Avatar>
+          {/* Quick Action */}
+          <div className="mb-8">
+            <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
+              <div className="p-8 text-center space-y-4">
+                <h3 className="font-display font-bold text-2xl">Ready for your next match?</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Generate a personalized mental preparation routine tailored to your opponent and current state
+                </p>
+                <Link href="/match-input">
+                  <Button size="lg" data-testid="button-start-routine">
+                    Start New Routine
+                  </Button>
+                </Link>
               </div>
-              <Link href="/knowledge">
-                <Button 
-                  className="w-full bg-red-500 hover:bg-red-600 text-white"
-                  data-testid="button-view-details"
-                >
-                  View details
-                </Button>
-              </Link>
             </Card>
           </div>
         </div>

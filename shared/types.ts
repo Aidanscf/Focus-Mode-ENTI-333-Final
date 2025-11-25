@@ -20,6 +20,7 @@ export type InsertUser = {
 export type AthleteProfile = {
   id: string;
   userId: string;
+  name: string;
   heightCm: number;
   weightKg: number;
   age: number | null;
@@ -35,6 +36,7 @@ export type AthleteProfile = {
 };
 
 export type InsertAthleteProfile = {
+  name: string;
   heightCm: number;
   weightKg: number;
   age?: number;

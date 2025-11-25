@@ -16,6 +16,9 @@ import { useToast } from "@/hooks/use-toast";
 
 const stepSchemas = [
   z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+  }),
+  z.object({
     height: z.string().min(1, "Height is required"),
     weight: z.string().min(1, "Weight is required"),
     age: z.string().optional(),
@@ -35,7 +38,7 @@ const stepSchemas = [
   }),
 ];
 
-const steps = ["Bio Info", "Sport Profile", "Habits", "Mental State"];
+const steps = ["Your Name", "Bio Info", "Sport Profile", "Habits", "Mental State"];
 
 export default function AthleteSetup() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -51,6 +54,7 @@ export default function AthleteSetup() {
   const createProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {
       const res = await apiRequest("POST", "/api/athlete-profile", {
+        name: profileData.name,
         heightCm: parseInt(profileData.height),
         weightKg: parseInt(profileData.weight),
         age: profileData.age ? parseInt(profileData.age) : null,
@@ -120,6 +124,24 @@ export default function AthleteSetup() {
                 <>
                   <FormField
                     control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your full name" {...field} data-testid="input-name" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
+              {currentStep === 1 && (
+                <>
+                  <FormField
+                    control={form.control}
                     name="height"
                     render={({ field }) => (
                       <FormItem>
@@ -160,7 +182,7 @@ export default function AthleteSetup() {
                 </>
               )}
 
-              {currentStep === 1 && (
+              {currentStep === 2 && (
                 <>
                   <FormField
                     control={form.control}
@@ -213,7 +235,7 @@ export default function AthleteSetup() {
                 </>
               )}
 
-              {currentStep === 2 && (
+              {currentStep === 3 && (
                 <>
                   <FormField
                     control={form.control}
@@ -244,7 +266,7 @@ export default function AthleteSetup() {
                 </>
               )}
 
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <>
                   <FormField
                     control={form.control}
