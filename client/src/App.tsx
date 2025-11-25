@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
+import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import AthleteSetup from "@/pages/AthleteSetup";
@@ -29,11 +30,12 @@ function Router() {
     );
   }
 
-  // Show Login page for logged-out users
+  // Show Landing and Login pages for logged-out users
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={Login} />
+        <Route path="/" component={Landing} />
+        <Route path="/auth" component={Login} />
         <Route path="*">
           <Redirect to="/" />
         </Route>
