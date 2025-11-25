@@ -3,13 +3,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertAthleteProfileSchema, insertRoutineSchema } from "@shared/schema";
 import { setupAuth, isAuthenticated } from "./localAuth";
-import { exec } from "child_process";
-import { promisify } from "util";
 import path from "path";
 import fs from "fs/promises";
 import OpenAI from "openai";
-
-const execAsync = promisify(exec);
 
 const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
@@ -263,12 +259,17 @@ async function generateAudio(text: string): Promise<string> {
     
     await fs.mkdir(publicDir, { recursive: true });
     
-    const pythonScript = path.join(process.cwd(), "server", "tts.py");
-    const { stderr } = await execAsync(`python3 "${pythonScript}" "${text.replace(/"/g, '\\"')}" "${outputPath}"`);
+    // Use OpenAI TTS API for high-quality voice synthesis
+    const mp3Response = await openai.audio.speech.create({
+      model: "tts-1",
+      voice: "nova", // Calm, warm voice ideal for meditation/coaching
+      input: text,
+      speed: 0.9, // Slightly slower for relaxation
+    });
     
-    if (stderr) {
-      console.error("TTS stderr:", stderr);
-    }
+    // Convert response to buffer and save to file
+    const buffer = Buffer.from(await mp3Response.arrayBuffer());
+    await fs.writeFile(outputPath, buffer);
     
     return `/audio/${filename}`;
   } catch (error) {

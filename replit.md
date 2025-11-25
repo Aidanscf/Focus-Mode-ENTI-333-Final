@@ -110,8 +110,9 @@ Preferred communication style: Simple, everyday language.
 - API key configuration: OPENAI_API_KEY or AI_INTEGRATIONS_OPENAI_API_KEY environment variable
 
 **Text-to-Speech**:
-- gTTS (Google Text-to-Speech) Python library
-- Executed via Node.js child_process to convert routine text to MP3 audio
+- OpenAI TTS API (tts-1 model with "nova" voice)
+- High-quality, natural-sounding voice synthesis ideal for meditation/coaching
+- Speed set to 0.9x for calm, relaxed delivery
 - Audio files stored in public/audio directory and served statically
 
 **Database**:
