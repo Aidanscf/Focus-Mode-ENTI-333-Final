@@ -2,9 +2,27 @@
 
 ## Overview
 
-FocusMode is a web application that generates personalized 10-minute pre-match mental preparation routines for athletes. The system collects athlete profiles (physical stats, sport details, mental tendencies, and habits) and match-day inputs (opponent information, strategy, mood, energy levels) to create AI-powered guided routines. Each routine includes breathing exercises, visualization techniques, personalized mantras, tactical reminders, and hydration/nutrition suggestions delivered through both text and text-to-speech audio.
+FocusMode is a web application that generates personalized 10-minute pre-match mental preparation routines for athletes. The system collects athlete profiles (name, physical stats, sport details, mental tendencies, and habits) and match-day inputs (opponent information, strategy, mood, energy levels) to create AI-powered guided routines. Each routine includes breathing exercises, visualization techniques, personalized mantras, tactical reminders, and hydration/nutrition suggestions delivered through both text and text-to-speech audio.
+
+The application features a marketing landing page for unauthenticated users, email/password authentication, and fully personalized experiences that address athletes by name throughout the interface.
 
 The application follows Apple HIG-inspired design principles with a focus on calm, distraction-free interfaces that support mental clarity and pre-match focus.
+
+## Recent Changes (November 25, 2025)
+
+**Personalization Features**:
+- Added `name` field to athlete profiles (stored in database)
+- Enhanced onboarding to 5-step process with name as first step: "Your Name" → "Bio Info" → "Sport Profile" → "Habits" → "Mental State"
+- Personalized dashboard shows user's actual name ("Welcome back, [Name]!") and avatar with initials
+- Dashboard now filters and displays only the logged-in user's routines (top 3 most recent)
+- Added empty state to dashboard when user has no routines yet ("Create Your First Routine" CTA)
+- Profile page now fetches and displays real athlete data from API with loading states
+- Implemented defensive name sanitization to handle edge cases (whitespace, multiple spaces)
+
+**Landing Page & Authentication**:
+- Created marketing landing page at "/" with hero section, features, how-it-works, and CTAs
+- Moved login/signup to "/auth" route
+- Unauthenticated users see landing page first, then navigate to auth
 
 ## User Preferences
 
@@ -35,22 +53,28 @@ Preferred communication style: Simple, everyday language.
 - Component patterns: Cards, forms with multi-step progress, mood chips, audio player, navigation sidebar
 
 **Key Pages**:
-- Home: Dashboard overview
-- AthleteSetup: Multi-step form (bio, sport profile, habits, mental state)
+- Landing: Marketing page with hero, features, how-it-works sections (unauthenticated users)
+- Auth (/auth): Email/password login and signup
+- Home: Personalized dashboard with user's name, avatar initials, and their routines (empty state if none)
+- AthleteSetup: 5-step onboarding form (name, bio, sport profile, habits, mental state)
 - MatchInput: Match-day check-in with opponent/strategy template input
 - RoutineOutput: Immersive routine display with audio playback
 - History: Past routine archive
 - Knowledge: Educational article library
-- Profile: Athlete profile view/edit
+- Profile: Athlete profile view/edit (fetches real data from API)
 
 ### Backend Architecture
 
 **Runtime**: Node.js with Express
 
 **API Pattern**: RESTful JSON API with the following endpoints:
-- GET/POST /api/athlete-profile - Athlete profile CRUD
-- POST /api/routines - Create new routine
-- GET /api/routines/:id - Retrieve specific routine
+- GET /api/auth/user - Get authenticated user information
+- GET /api/athlete-profile - Get athlete profile for logged-in user
+- POST /api/athlete-profile - Create athlete profile for logged-in user
+- PATCH /api/athlete-profile/:id - Update athlete profile (verifies ownership)
+- GET /api/routines - Get all routines for logged-in user (filtered by user's athlete profile)
+- GET /api/routines/:id - Get specific routine (verifies ownership)
+- POST /api/routines/generate - Generate new routine for logged-in user (verifies ownership)
 
 **Development vs Production**:
 - Development: Vite dev server with HMR, middleware mode
@@ -68,8 +92,14 @@ Preferred communication style: Simple, everyday language.
 **ORM**: Drizzle ORM with schema-first approach
 
 **Schema Design**:
-- `athlete_profiles`: Stores athlete bio, sport details, habits, mental tendencies (one per user in MVP)
-- `routines`: Stores generated routines with match details, strategy template (JSONB), mood/energy data, routine text, and audio URL
+- `users`: Stores email and hashed password for authentication
+- `athlete_profiles`: Stores athlete name, bio (height, weight, age), sport details, habits, mental tendencies (one per user, linked via userId)
+- `routines`: Stores generated routines with match details, strategy template (JSONB), mood/energy data, routine text, and audio URL (linked to athlete_profiles)
+
+**Data Filtering**:
+- All API endpoints enforce user-specific filtering
+- Routines are only visible to the athlete profile owner
+- Profile updates verify ownership before allowing changes
 
 **Migrations**: Drizzle Kit manages schema migrations in /migrations directory
 
