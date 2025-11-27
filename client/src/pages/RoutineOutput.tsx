@@ -15,39 +15,56 @@ interface RoutineSection {
 
 function parseRoutineSections(routineText: string): RoutineSection[] {
   const sectionHeaders = [
-    { key: "BREATHING AND GROUNDING:", title: "Breathing & Grounding", icon: Wind },
-    { key: "VISUALIZATION:", title: "Visualization", icon: Eye },
-    { key: "AFFIRMATIONS:", title: "Affirmations", icon: Heart },
-    { key: "TACTICAL FOCUS:", title: "Tactical Focus", icon: Target },
-    { key: "PHYSICAL PREPARATION:", title: "Physical Preparation", icon: Droplet },
-    { key: "CLOSING:", title: "Closing", icon: Sparkles },
+    { pattern: /BREATHING\s*(AND|&)?\s*GROUNDING\s*:?/i, title: "Breathing & Grounding", icon: Wind },
+    { pattern: /VISUALIZATION\s*:?/i, title: "Visualization", icon: Eye },
+    { pattern: /AFFIRMATIONS?\s*:?/i, title: "Affirmations", icon: Heart },
+    { pattern: /TACTICAL\s*FOCUS\s*:?/i, title: "Tactical Focus", icon: Target },
+    { pattern: /PHYSICAL\s*PREPARATION\s*:?/i, title: "Physical Preparation", icon: Droplet },
+    { pattern: /CLOSING\s*:?/i, title: "Closing", icon: Sparkles },
   ];
 
   const sections: RoutineSection[] = [];
+  const normalizedText = routineText
+    .replace(/\*\*/g, '')
+    .replace(/##/g, '')
+    .replace(/\*/g, '')
+    .replace(/#/g, '');
   
-  for (let i = 0; i < sectionHeaders.length; i++) {
-    const currentHeader = sectionHeaders[i];
-    const nextHeader = sectionHeaders[i + 1];
-    
-    const startIndex = routineText.indexOf(currentHeader.key);
-    if (startIndex === -1) continue;
-    
-    const contentStart = startIndex + currentHeader.key.length;
-    let contentEnd = routineText.length;
-    
-    if (nextHeader) {
-      const nextIndex = routineText.indexOf(nextHeader.key);
-      if (nextIndex !== -1) {
-        contentEnd = nextIndex;
-      }
+  const sectionMatches: { index: number; endIndex: number; header: typeof sectionHeaders[0] }[] = [];
+  
+  for (const header of sectionHeaders) {
+    const match = normalizedText.match(header.pattern);
+    if (match && match.index !== undefined) {
+      sectionMatches.push({
+        index: match.index,
+        endIndex: match.index + match[0].length,
+        header,
+      });
     }
+  }
+  
+  sectionMatches.sort((a, b) => a.index - b.index);
+  
+  for (let i = 0; i < sectionMatches.length; i++) {
+    const current = sectionMatches[i];
+    const next = sectionMatches[i + 1];
     
-    const content = routineText.slice(contentStart, contentEnd).trim();
+    const contentStart = current.endIndex;
+    const contentEnd = next ? next.index : normalizedText.length;
+    
+    let content = normalizedText.slice(contentStart, contentEnd).trim();
+    
+    content = content
+      .split('\n')
+      .map(line => line.replace(/^[-•]\s*/, '').trim())
+      .filter(line => line.length > 0)
+      .join('\n');
+    
     if (content) {
       sections.push({
-        title: currentHeader.title,
+        title: current.header.title,
         content,
-        icon: currentHeader.icon,
+        icon: current.header.icon,
       });
     }
   }
