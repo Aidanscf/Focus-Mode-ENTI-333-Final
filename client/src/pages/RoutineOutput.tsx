@@ -2,10 +2,58 @@ import { Button } from "@/components/ui/button";
 import AudioPlayer from "@/components/AudioPlayer";
 import RoutineCard from "@/components/RoutineCard";
 import NutritionCard from "@/components/NutritionCard";
-import { Wind, Target, Flame, Droplet, Wheat, Loader2 } from "lucide-react";
+import { Wind, Target, Flame, Droplet, Eye, Heart, Brain, Sparkles, Loader2 } from "lucide-react";
 import { useLocation, useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import heroGradient from "@assets/generated_images/hero_meditation_gradient_background.png";
+
+interface RoutineSection {
+  title: string;
+  content: string;
+  icon: any;
+}
+
+function parseRoutineSections(routineText: string): RoutineSection[] {
+  const sectionHeaders = [
+    { key: "BREATHING AND GROUNDING:", title: "Breathing & Grounding", icon: Wind },
+    { key: "VISUALIZATION:", title: "Visualization", icon: Eye },
+    { key: "AFFIRMATIONS:", title: "Affirmations", icon: Heart },
+    { key: "TACTICAL FOCUS:", title: "Tactical Focus", icon: Target },
+    { key: "PHYSICAL PREPARATION:", title: "Physical Preparation", icon: Droplet },
+    { key: "CLOSING:", title: "Closing", icon: Sparkles },
+  ];
+
+  const sections: RoutineSection[] = [];
+  
+  for (let i = 0; i < sectionHeaders.length; i++) {
+    const currentHeader = sectionHeaders[i];
+    const nextHeader = sectionHeaders[i + 1];
+    
+    const startIndex = routineText.indexOf(currentHeader.key);
+    if (startIndex === -1) continue;
+    
+    const contentStart = startIndex + currentHeader.key.length;
+    let contentEnd = routineText.length;
+    
+    if (nextHeader) {
+      const nextIndex = routineText.indexOf(nextHeader.key);
+      if (nextIndex !== -1) {
+        contentEnd = nextIndex;
+      }
+    }
+    
+    const content = routineText.slice(contentStart, contentEnd).trim();
+    if (content) {
+      sections.push({
+        title: currentHeader.title,
+        content,
+        icon: currentHeader.icon,
+      });
+    }
+  }
+  
+  return sections;
+}
 
 export default function RoutineOutput() {
   const [, setLocation] = useLocation();
@@ -39,19 +87,11 @@ export default function RoutineOutput() {
     );
   }
 
-  const routineLines = routine.routineText.split('\n').filter((line: string) => line.trim());
-  const mantra = routineLines.find((line: string) => 
-    line.toLowerCase().includes('mantra') || 
-    line.toLowerCase().includes('affirmation')
-  ) || routineLines[0];
+  const sections = parseRoutineSections(routine.routineText);
   
-  const strategyLines = routine.strategyTemplate ? [
-    routine.strategyTemplate.primaryPlan,
-    routine.strategyTemplate.opponentTendencies,
-    `Avoid: ${routine.strategyTemplate.situationsToAvoid}`,
-    `Emphasize: ${routine.strategyTemplate.strengthsToEmphasize}`,
-    routine.strategyTemplate.coachReminders || "",
-  ].filter(Boolean) : [];
+  const affirmationSection = sections.find(s => s.title === "Affirmations");
+  const closingSection = sections.find(s => s.title === "Closing");
+  const heroText = closingSection?.content || affirmationSection?.content?.split('\n')[0] || "You are ready.";
 
   return (
     <div className="min-h-screen">
@@ -65,8 +105,8 @@ export default function RoutineOutput() {
       >
         <div className="text-center px-4 py-16">
           <h2 className="font-display font-medium text-xl text-white/80 mb-4">Match vs {routine.opponentName}</h2>
-          <p className="font-display font-semibold text-3xl md:text-5xl italic text-white max-w-3xl mx-auto leading-relaxed">
-            {mantra}
+          <p className="font-display font-semibold text-2xl md:text-4xl italic text-white max-w-3xl mx-auto leading-relaxed">
+            {heroText}
           </p>
         </div>
       </section>
@@ -77,18 +117,21 @@ export default function RoutineOutput() {
         <div className="space-y-6">
           <h2 className="font-display font-semibold text-3xl text-center mb-8">Your Pre-Match Routine</h2>
 
-          <RoutineCard
-            title="Full Routine"
-            content={routine.routineText}
-            icon={Wind}
-          />
-
-          {strategyLines.length > 0 && (
+          {sections.length > 0 ? (
+            sections.map((section, index) => (
+              <RoutineCard
+                key={index}
+                title={section.title}
+                content={section.content}
+                icon={section.icon}
+                variant={section.title === "Affirmations" ? "highlight" : undefined}
+              />
+            ))
+          ) : (
             <RoutineCard
-              title="Strategy Reminders"
-              content={strategyLines}
-              icon={Target}
-              variant="highlight"
+              title="Full Routine"
+              content={routine.routineText}
+              icon={Wind}
             />
           )}
 
@@ -114,7 +157,7 @@ export default function RoutineOutput() {
           <Button 
             variant="outline" 
             className="flex-1"
-            onClick={() => setLocation("/")}
+            onClick={() => setLocation("/home")}
             data-testid="button-home"
           >
             Return Home

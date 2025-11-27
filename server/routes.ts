@@ -202,9 +202,12 @@ async function generateRoutineWithGPT(
   hydrationMl: number,
   carbsGrams: number
 ): Promise<string> {
-  const prompt = `You are an expert sports psychologist creating a personalized pre-match mental preparation routine for an athlete.
+  const athleteName = profile.name || "Athlete";
+  
+  const prompt = `You are an expert sports psychologist creating a personalized pre-match mental preparation routine for ${athleteName}.
 
 Athlete Profile:
+- Name: ${athleteName}
 - Sport: ${profile.sport}${profile.position ? `, Position: ${profile.position}` : ''}
 - Age: ${profile.age || 'Not specified'}
 - Physical: ${profile.heightCm}cm, ${profile.weightKg}kg
@@ -231,20 +234,40 @@ Physical Preparation:
 - Recommended Hydration: ${hydrationMl}ml
 - Recommended Carbs: ${carbsGrams}g
 
-Create a comprehensive pre-match meditation and mental preparation routine (3-5 minutes when read aloud). Include:
-1. Breathing exercises and grounding
-2. Mental imagery and visualization specific to their strategy
-3. Positive affirmations tailored to their mental tendencies
-4. Focus cues and tactical reminders
-5. Physical preparation reminders (hydration, nutrition)
+Create a comprehensive pre-match meditation and mental preparation routine (3-5 minutes when read aloud).
 
-Write in second person ("you"), calm and encouraging tone, suitable for audio meditation. Make it specific to this athlete and match.`;
+IMPORTANT FORMATTING RULES:
+- Write in PLAIN TEXT only - NO markdown formatting (no **, ##, *, etc.)
+- Use the exact section headers below with the format "SECTION NAME:" on its own line
+- Address the athlete by their name (${athleteName}) throughout
+- Write in second person ("you"), calm and encouraging tone
+- Make it suitable for audio meditation/text-to-speech
+
+Structure the routine with these exact section headers:
+
+BREATHING AND GROUNDING:
+[Write 2-3 paragraphs of breathing exercises and grounding techniques]
+
+VISUALIZATION:
+[Write 2-3 paragraphs of mental imagery specific to their strategy and opponent]
+
+AFFIRMATIONS:
+[Write 3-5 personalized positive affirmations as separate lines, addressing their mental tendencies]
+
+TACTICAL FOCUS:
+[Write 2-3 paragraphs with focus cues and tactical reminders based on their strategy]
+
+PHYSICAL PREPARATION:
+[Write 1-2 paragraphs about hydration (${hydrationMl}ml) and nutrition (${carbsGrams}g carbs) reminders]
+
+CLOSING:
+[Write a brief motivating closing statement to send them into their match with confidence]`;
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
-    max_tokens: 1500,
+    max_tokens: 2000,
   });
 
   return completion.choices[0].message.content || "Unable to generate routine at this time.";
