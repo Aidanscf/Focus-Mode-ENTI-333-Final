@@ -74,7 +74,7 @@ export default function AthleteSetup() {
         title: "Profile created",
         description: "Your athlete profile has been saved successfully",
       });
-      setLocation("/match-input");
+      setLocation("/home");
     },
     onError: (error: any) => {
       toast({
