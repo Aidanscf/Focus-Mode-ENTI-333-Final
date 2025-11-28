@@ -5,10 +5,17 @@ import { insertAthleteProfileSchema, insertRoutineSchema } from "@shared/schema"
 import { setupAuth, isAuthenticated } from "./localAuth";
 import path from "path";
 import fs from "fs/promises";
+import { spawn } from "child_process";
 import OpenAI from "openai";
 
+// Client for chat completions (uses AI Integrations proxy)
 const openai = new OpenAI({
   baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  apiKey: process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+});
+
+// Separate client for TTS (direct OpenAI API - proxy doesn't support TTS)
+const openaiTTS = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
 });
 
@@ -362,30 +369,63 @@ BEGIN NOW. Generate the full routine and the 10-minute meditation script.`;
   return { routineText, meditationScript };
 }
 
-async function generateAudio(text: string): Promise<string> {
-  try {
-    const timestamp = Date.now();
-    const filename = `routine_${timestamp}.mp3`;
-    const publicDir = path.join(process.cwd(), "public", "audio");
-    const outputPath = path.join(publicDir, filename);
+async function generateAudioWithGTTS(text: string, outputPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const pythonScript = path.join(process.cwd(), "server", "tts.py");
+    const python = spawn("python3", [pythonScript, text, outputPath]);
     
-    await fs.mkdir(publicDir, { recursive: true });
-    
-    // Use OpenAI TTS API for high-quality voice synthesis
-    const mp3Response = await openai.audio.speech.create({
-      model: "tts-1",
-      voice: "nova", // Calm, warm voice ideal for meditation/coaching
-      input: text,
-      speed: 0.9, // Slightly slower for relaxation
+    python.stderr.on("data", (data) => {
+      console.error(`gTTS error: ${data}`);
     });
     
-    // Convert response to buffer and save to file
+    python.on("close", (code) => {
+      resolve(code === 0);
+    });
+    
+    python.on("error", (err) => {
+      console.error("Failed to start gTTS:", err);
+      resolve(false);
+    });
+  });
+}
+
+async function generateAudio(text: string): Promise<string> {
+  const timestamp = Date.now();
+  const filename = `routine_${timestamp}.mp3`;
+  const publicDir = path.join(process.cwd(), "public", "audio");
+  const outputPath = path.join(publicDir, filename);
+  
+  await fs.mkdir(publicDir, { recursive: true });
+  
+  // Try OpenAI TTS first (higher quality)
+  try {
+    const mp3Response = await openaiTTS.audio.speech.create({
+      model: "tts-1",
+      voice: "nova",
+      input: text,
+      speed: 0.9,
+    });
+    
     const buffer = Buffer.from(await mp3Response.arrayBuffer());
     await fs.writeFile(outputPath, buffer);
     
+    console.log(`Audio generated with OpenAI TTS: ${filename}`);
     return `/audio/${filename}`;
   } catch (error) {
-    console.error("Audio generation error:", error);
-    return "";
+    console.log("OpenAI TTS unavailable, falling back to gTTS...");
   }
+  
+  // Fallback to Google TTS (free, lower quality)
+  try {
+    const success = await generateAudioWithGTTS(text, outputPath);
+    if (success) {
+      console.log(`Audio generated with gTTS: ${filename}`);
+      return `/audio/${filename}`;
+    }
+  } catch (error) {
+    console.error("gTTS fallback error:", error);
+  }
+  
+  console.error("All audio generation methods failed");
+  return "";
 }

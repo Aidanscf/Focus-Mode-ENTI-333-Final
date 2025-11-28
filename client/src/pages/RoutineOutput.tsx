@@ -155,15 +155,26 @@ export default function RoutineOutput() {
       </section>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl space-y-8">
-        {routine.routineAudioUrl && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <Headphones className="h-5 w-5" />
-              <span className="text-sm">10-Minute Guided Meditation</span>
-            </div>
-            <AudioPlayer audioUrl={routine.routineAudioUrl} />
+        <div className="space-y-4">
+          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+            <Headphones className="h-5 w-5" />
+            <span className="text-sm">10-Minute Guided Meditation</span>
           </div>
-        )}
+          {routine.routineAudioUrl ? (
+            <AudioPlayer audioUrl={routine.routineAudioUrl} />
+          ) : (
+            <Card className="p-8">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="p-4 rounded-full bg-muted">
+                  <Headphones className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground">
+                  Audio meditation is being generated or was not available for this routine.
+                </p>
+              </div>
+            </Card>
+          )}
+        </div>
 
         <div className="space-y-6">
           <h2 className="font-display font-semibold text-3xl text-center mb-8">Your Pre-Match Routine</h2>
