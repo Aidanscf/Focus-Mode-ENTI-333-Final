@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 
 type CreateRoutineData = InsertRoutine & {
   routineText: string;
+  meditationScript?: string | null;
   routineAudioUrl: string | null;
 };
 
