@@ -22,6 +22,7 @@ export default function History() {
     date: format(new Date(routine.createdAt), "MMM dd, yyyy"),
     opponent: routine.opponentName,
     preview: routine.routineText.substring(0, 200),
+    audioUrl: routine.routineAudioUrl,
   })) || [];
 
   return (
