@@ -22,10 +22,12 @@ const stepSchemas = [
     height: z.string().min(1, "Height is required"),
     weight: z.string().min(1, "Weight is required"),
     age: z.string().optional(),
+    gender: z.string().min(1, "Gender is required"),
   }),
   z.object({
     sport: z.string().min(1, "Sport is required"),
     position: z.string().optional(),
+    levelOfPlay: z.string().min(1, "Level of play is required"),
     preferredMatchTime: z.string().min(1, "Preferred match time is required"),
   }),
   z.object({
@@ -58,8 +60,10 @@ export default function AthleteSetup() {
         heightCm: parseInt(profileData.height),
         weightKg: parseInt(profileData.weight),
         age: profileData.age ? parseInt(profileData.age) : null,
+        gender: profileData.gender,
         sport: profileData.sport,
         position: profileData.position || null,
+        levelOfPlay: profileData.levelOfPlay,
         preferredMatchTime: profileData.preferredMatchTime,
         hydrationHabits: profileData.hydrationHabits,
         dietType: profileData.dietType || null,
@@ -179,6 +183,27 @@ export default function AthleteSetup() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-gender">
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </>
               )}
 
@@ -206,6 +231,29 @@ export default function AthleteSetup() {
                         <FormControl>
                           <Input placeholder="e.g., Forward, Point Guard" {...field} data-testid="input-position" />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="levelOfPlay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Level of Play</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-level">
+                              <SelectValue placeholder="Select your level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="beginner">Beginner</SelectItem>
+                            <SelectItem value="intermediate">Intermediate</SelectItem>
+                            <SelectItem value="advanced">Advanced</SelectItem>
+                            <SelectItem value="elite">Elite</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

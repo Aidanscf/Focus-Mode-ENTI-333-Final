@@ -34,8 +34,10 @@ export const athleteProfiles = pgTable("athlete_profiles", {
   heightCm: integer("height_cm").notNull(),
   weightKg: integer("weight_kg").notNull(),
   age: integer("age"),
+  gender: text("gender").notNull().default("male"),
   sport: text("sport").notNull(),
   position: text("position"),
+  levelOfPlay: text("level_of_play").notNull().default("intermediate"),
   preferredMatchTime: text("preferred_match_time").notNull(),
   hydrationHabits: text("hydration_habits").notNull(),
   dietType: text("diet_type"),
@@ -64,6 +66,7 @@ export const routines = pgTable("routines", {
   hydrationTodayMl: integer("hydration_today_ml").notNull(),
   matchDuration: text("match_duration").notNull(),
   routineText: text("routine_text").notNull(),
+  meditationScript: text("meditation_script"),
   routineAudioUrl: text("routine_audio_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
