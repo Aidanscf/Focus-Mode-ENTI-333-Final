@@ -2,27 +2,55 @@
 
 ## Overview
 
-FocusMode is a web application that generates personalized 10-minute pre-match mental preparation routines for athletes. The system collects athlete profiles (name, physical stats, sport details, mental tendencies, and habits) and match-day inputs (opponent information, strategy, mood, energy levels) to create AI-powered guided routines. Each routine includes breathing exercises, visualization techniques, personalized mantras, tactical reminders, and hydration/nutrition suggestions delivered through both text and text-to-speech audio.
+FocusMode is a web application that generates personalized 10-minute pre-match mental preparation routines for athletes. The system collects athlete profiles (name, physical stats, gender, level of play, sport details, mental tendencies, and habits) and match-day inputs (opponent information, strategy, mood, energy levels) to create AI-powered guided routines. 
+
+Each routine includes:
+1. **Breathing Routine** - Slow, steady breathing cues with timing guidance
+2. **Visualization Routine** - Mental imagery of match phases and execution
+3. **Personalized Mantra** - 3-5 word athlete-specific affirmation
+4. **Strategy Reminders** - Actionable bullet points
+5. **Hydration & Energy Cue** - Evidence-based recommendations (ACSM/IOC/ISSN formulas)
+6. **Motivational Closing** - Calm, grounded closing statement
+
+Additionally, a separate 10-minute guided meditation script (~1000-1200 words) is generated and converted to audio using OpenAI TTS.
 
 The application features a marketing landing page for unauthenticated users, email/password authentication, and fully personalized experiences that address athletes by name throughout the interface.
 
 The application follows Apple HIG-inspired design principles with a focus on calm, distraction-free interfaces that support mental clarity and pre-match focus.
 
-## Recent Changes (November 25, 2025)
+## Recent Changes (November 28, 2025)
+
+**Enhanced Routine Generation**:
+- Added `gender` and `levelOfPlay` fields to athlete profiles for personalized hydration/carb calculations
+- Implemented evidence-based physiological calculations (ACSM, IOC, ISSN-backed formulas):
+  - Daily hydration baseline based on gender and weight
+  - Pre-match hydration (2-4 hours and 30-60 minutes before)
+  - Carbohydrate targets based on match duration and level of play
+- New GPT-4o prompt following elite sports psychology methodology
+- Routine now structured as 6 sections plus separate 10-minute meditation script
+- Audio is generated from the meditation script (not the summary routine)
+- Added `meditationScript` column to routines table
+
+**Updated Onboarding**:
+- Bio Info step now collects gender
+- Sport Profile step now collects level of play (Beginner/Intermediate/Advanced/Elite)
+
+**Routine Output Page Improvements**:
+- Updated section parsing for new routine format
+- Added toggle to view full meditation script text
+- Personalized Mantra displayed as highlighted card
+- Audio player labeled as "10-Minute Guided Meditation"
+
+## Previous Changes (November 25, 2025)
 
 **Personalization Features**:
 - Added `name` field to athlete profiles (stored in database)
-- Enhanced onboarding to 5-step process with name as first step: "Your Name" → "Bio Info" → "Sport Profile" → "Habits" → "Mental State"
-- Personalized dashboard shows user's actual name ("Welcome back, [Name]!") and avatar with initials
-- Dashboard now filters and displays only the logged-in user's routines (top 3 most recent)
-- Added empty state to dashboard when user has no routines yet ("Create Your First Routine" CTA)
-- Profile page now fetches and displays real athlete data from API with loading states
-- Implemented defensive name sanitization to handle edge cases (whitespace, multiple spaces)
+- Enhanced onboarding to 5-step process with name as first step
+- Personalized dashboard shows user's actual name and avatar with initials
 
 **Landing Page & Authentication**:
 - Created marketing landing page at "/" with hero section, features, how-it-works, and CTAs
 - Moved login/signup to "/auth" route
-- Unauthenticated users see landing page first, then navigate to auth
 
 ## User Preferences
 
@@ -93,8 +121,8 @@ Preferred communication style: Simple, everyday language.
 
 **Schema Design**:
 - `users`: Stores email and hashed password for authentication
-- `athlete_profiles`: Stores athlete name, bio (height, weight, age), sport details, habits, mental tendencies (one per user, linked via userId)
-- `routines`: Stores generated routines with match details, strategy template (JSONB), mood/energy data, routine text, and audio URL (linked to athlete_profiles)
+- `athlete_profiles`: Stores athlete name, bio (height, weight, age, gender), sport details (sport, position, levelOfPlay), preferredMatchTime, hydrationHabits, dietType, mentalTendencies, performsBestWhen (one per user, linked via userId)
+- `routines`: Stores generated routines with match details, strategy template (JSONB), mood/energy data, routine text, meditation script, and audio URL (linked to athlete_profiles)
 
 **Data Filtering**:
 - All API endpoints enforce user-specific filtering
