@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Play, Pause, RotateCcw } from "lucide-react";
@@ -8,10 +8,46 @@ interface AudioPlayerProps {
   audioUrl?: string;
 }
 
+function formatTime(seconds: number): string {
+  if (!isFinite(seconds) || isNaN(seconds)) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
 export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("ended", handleEnded);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [audioUrl]);
 
   const togglePlayPause = () => {
     if (!audioRef.current) return;
@@ -22,15 +58,26 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
-    console.log(isPlaying ? 'Paused audio' : 'Playing audio');
   };
 
   const handleRestart = () => {
     if (!audioRef.current) return;
     audioRef.current.currentTime = 0;
-    setProgress(0);
-    console.log('Restarted audio');
+    setCurrentTime(0);
+    if (!isPlaying) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
   };
+
+  const handleSeek = (value: number[]) => {
+    if (!audioRef.current || !duration) return;
+    const newTime = (value[0] / 100) * duration;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <Card className="p-8">
@@ -53,16 +100,16 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
 
         <div className="w-full space-y-2">
           <Slider
-            value={[progress]}
-            onValueChange={(value) => setProgress(value[0])}
+            value={[progressPercent]}
+            onValueChange={handleSeek}
             max={100}
-            step={1}
+            step={0.1}
             className="w-full"
             data-testid="slider-audio-progress"
           />
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>0:00</span>
-            <span>10:00</span>
+          <div className="flex justify-between text-sm text-muted-foreground font-mono">
+            <span data-testid="text-current-time">{formatTime(currentTime)}</span>
+            <span data-testid="text-duration">{formatTime(duration)}</span>
           </div>
         </div>
 
@@ -77,7 +124,7 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
           Restart
         </Button>
 
-        {audioUrl && <audio ref={audioRef} src={audioUrl} />}
+        {audioUrl && <audio ref={audioRef} src={audioUrl} preload="metadata" />}
       </div>
     </Card>
   );
