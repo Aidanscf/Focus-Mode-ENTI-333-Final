@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - Calming palette for athletes */
+/* LIGHT MODE - Apple-inspired calming palette for athletes */
 :root {
   --button-outline: rgba(0,0,0, .08);
   --badge-outline: rgba(0,0,0, .04);
@@ -10,48 +10,56 @@
   --elevate-1: rgba(0,0,0, .02);
   --elevate-2: rgba(0,0,0, .05);
   
-  /* Soft gradient colors */
-  --gradient-start: 200 30% 96%;
-  --gradient-mid: 250 30% 97%;
-  --gradient-end: 180 25% 96%;
+  /* Soft lavender gradient background (#EEF2FF → #F6ECFF) */
+  --gradient-start: 227 100% 97%;
+  --gradient-mid: 248 100% 97%;
+  --gradient-end: 270 100% 97%;
   
-  /* Calming teal primary */
-  --background: 195 30% 97%;
-  --foreground: 215 25% 18%;
-  --border: 200 20% 88%;
-  --card: 0 0% 100%;
-  --card-foreground: 215 25% 20%;
-  --card-border: 200 20% 90%;
-  --sidebar: 200 25% 96%;
-  --sidebar-foreground: 215 20% 25%;
-  --sidebar-border: 200 20% 90%;
-  --sidebar-primary: 175 55% 45%;
+  /* Ice/teal card colors (#D7F4F7 → #ECF9FC) */
+  --card-gradient-start: 185 62% 91%;
+  --card-gradient-end: 193 67% 95%;
+  
+  /* Text colors from spec */
+  --background: 227 100% 97%;
+  --foreground: 222 47% 11%;
+  --border: 227 40% 88%;
+  --card: 190 60% 97%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 190 40% 88%;
+  --sidebar: 227 60% 96%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-border: 227 40% 90%;
+  --sidebar-primary: 186 85% 42%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 200 25% 92%;
-  --sidebar-accent-foreground: 215 20% 25%;
-  --sidebar-ring: 175 55% 45%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 215 20% 25%;
-  --popover-border: 200 20% 88%;
+  --sidebar-accent: 227 50% 94%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-ring: 186 85% 42%;
+  --popover: 190 60% 98%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 227 40% 88%;
   
-  /* Soft teal as primary */
-  --primary: 175 55% 42%;
+  /* Teal primary button accent (#10B6C8) */
+  --primary: 186 85% 42%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 250 25% 94%;
-  --secondary-foreground: 250 20% 30%;
-  --muted: 200 20% 94%;
-  --muted-foreground: 215 15% 45%;
-  --accent: 250 30% 95%;
-  --accent-foreground: 250 25% 25%;
+  --secondary: 270 60% 96%;
+  --secondary-foreground: 270 30% 30%;
+  --muted: 227 40% 94%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 270 80% 96%;
+  --accent-foreground: 275 60% 40%;
   --destructive: 0 65% 50%;
   --destructive-foreground: 0 0% 100%;
-  --input: 200 20% 85%;
-  --ring: 175 55% 45%;
+  --input: 227 30% 88%;
+  --ring: 186 85% 42%;
   
-  /* Calming chart colors */
-  --chart-1: 175 55% 45%;
-  --chart-2: 250 50% 60%;
-  --chart-3: 200 60% 50%;
+  /* Blue-purple accent gradient (#6D8BFF → #C46BFF) */
+  --accent-gradient-start: 227 100% 71%;
+  --accent-gradient-end: 275 100% 71%;
+  
+  /* Chart colors with accent gradient colors */
+  --chart-1: 186 85% 42%;
+  --chart-2: 275 100% 71%;
+  --chart-3: 227 100% 71%;
   --chart-4: 30 70% 55%;
   --chart-5: 320 50% 55%;
   --font-sans: Inter, sans-serif;
@@ -98,7 +106,7 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
-/* DARK MODE - Twilight calm */
+/* DARK MODE - Deep twilight with lavender/purple tones */
 .dark {
   --button-outline: rgba(255,255,255, .08);
   --badge-outline: rgba(255,255,255, .04);
@@ -106,47 +114,55 @@
   --elevate-1: rgba(255,255,255, .03);
   --elevate-2: rgba(255,255,255, .07);
   
-  /* Dark gradient colors - twilight theme */
-  --gradient-start: 220 30% 12%;
-  --gradient-mid: 260 25% 14%;
-  --gradient-end: 200 25% 10%;
+  /* Dark gradient - deep purple/lavender twilight */
+  --gradient-start: 227 40% 10%;
+  --gradient-mid: 260 35% 12%;
+  --gradient-end: 275 30% 10%;
   
-  --background: 220 25% 10%;
-  --foreground: 200 20% 92%;
-  --border: 220 20% 18%;
-  --card: 220 22% 14%;
-  --card-foreground: 200 18% 90%;
-  --card-border: 220 20% 18%;
-  --sidebar: 220 22% 12%;
-  --sidebar-foreground: 200 18% 88%;
-  --sidebar-border: 220 20% 16%;
-  --sidebar-primary: 175 50% 50%;
-  --sidebar-primary-foreground: 220 25% 10%;
-  --sidebar-accent: 220 20% 18%;
-  --sidebar-accent-foreground: 200 18% 90%;
-  --sidebar-ring: 175 50% 50%;
-  --popover: 220 22% 14%;
-  --popover-foreground: 200 18% 88%;
-  --popover-border: 220 20% 18%;
+  /* Ice/teal card colors for dark mode */
+  --card-gradient-start: 186 30% 18%;
+  --card-gradient-end: 190 25% 14%;
   
-  /* Soft teal primary for dark mode */
-  --primary: 175 50% 50%;
-  --primary-foreground: 220 25% 8%;
-  --secondary: 250 20% 22%;
-  --secondary-foreground: 250 15% 85%;
-  --muted: 220 18% 18%;
-  --muted-foreground: 200 15% 55%;
-  --accent: 250 20% 20%;
-  --accent-foreground: 250 15% 88%;
+  --background: 227 35% 10%;
+  --foreground: 227 30% 92%;
+  --border: 227 25% 18%;
+  --card: 190 25% 14%;
+  --card-foreground: 227 25% 92%;
+  --card-border: 190 20% 20%;
+  --sidebar: 227 30% 12%;
+  --sidebar-foreground: 227 25% 88%;
+  --sidebar-border: 227 25% 16%;
+  --sidebar-primary: 186 80% 50%;
+  --sidebar-primary-foreground: 227 35% 8%;
+  --sidebar-accent: 227 25% 18%;
+  --sidebar-accent-foreground: 227 25% 90%;
+  --sidebar-ring: 186 80% 50%;
+  --popover: 190 25% 14%;
+  --popover-foreground: 227 25% 88%;
+  --popover-border: 227 25% 18%;
+  
+  /* Teal primary for dark mode */
+  --primary: 186 80% 50%;
+  --primary-foreground: 227 35% 8%;
+  --secondary: 275 25% 20%;
+  --secondary-foreground: 275 20% 88%;
+  --muted: 227 22% 18%;
+  --muted-foreground: 220 15% 55%;
+  --accent: 275 30% 22%;
+  --accent-foreground: 275 25% 88%;
   --destructive: 0 60% 50%;
   --destructive-foreground: 0 0% 100%;
-  --input: 220 20% 25%;
-  --ring: 175 50% 50%;
+  --input: 227 25% 22%;
+  --ring: 186 80% 50%;
+  
+  /* Accent gradient for dark mode */
+  --accent-gradient-start: 227 90% 60%;
+  --accent-gradient-end: 275 90% 60%;
   
   /* Chart colors for dark mode */
-  --chart-1: 175 50% 55%;
-  --chart-2: 250 45% 65%;
-  --chart-3: 200 55% 55%;
+  --chart-1: 186 80% 55%;
+  --chart-2: 275 90% 70%;
+  --chart-3: 227 90% 65%;
   --chart-4: 30 65% 60%;
   --chart-5: 320 45% 60%;
   --shadow-2xs: 0px 2px 0px 0px hsl(220 25% 0% / 0.15);
@@ -220,26 +236,45 @@
     );
   }
   
+  /* Blue-purple accent gradient (#6D8BFF → #C46BFF) */
+  .bg-gradient-accent {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--accent-gradient-start)) 0%,
+      hsl(var(--accent-gradient-end)) 100%
+    );
+  }
+  
+  /* Hero section with blue-purple accent gradient */
   .bg-gradient-hero {
     background: linear-gradient(
       135deg,
-      hsl(220 35% 18%) 0%,
-      hsl(260 30% 22%) 50%,
-      hsl(200 30% 16%) 100%
+      hsl(227 80% 55%) 0%,
+      hsl(250 70% 55%) 50%,
+      hsl(275 80% 55%) 100%
     );
   }
   
   .dark .bg-gradient-hero {
     background: linear-gradient(
       135deg,
-      hsl(220 35% 8%) 0%,
-      hsl(260 30% 12%) 50%,
-      hsl(200 30% 6%) 100%
+      hsl(227 70% 35%) 0%,
+      hsl(250 60% 40%) 50%,
+      hsl(275 70% 40%) 100%
+    );
+  }
+  
+  /* Ice/teal card gradient */
+  .bg-gradient-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card-gradient-start)) 0%,
+      hsl(var(--card-gradient-end)) 100%
     );
   }
   
   .bg-glass {
-    background: hsl(var(--card) / 0.8);
+    background: hsl(var(--card) / 0.85);
     backdrop-filter: blur(12px);
   }
   
