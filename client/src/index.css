@@ -2,51 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE */
+/* LIGHT MODE - Calming palette for athletes */
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
-  --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
-  --background: 210 20% 98%;
-  --foreground: 210 15% 12%;
-  --border: 210 15% 88%;
-  --card: 210 18% 96%;
-  --card-foreground: 210 15% 15%;
-  --card-border: 210 16% 92%;
-  --sidebar: 210 17% 94%;
-  --sidebar-foreground: 210 15% 18%;
-  --sidebar-border: 210 16% 89%;
-  --sidebar-primary: 212 85% 45%;
-  --sidebar-primary-foreground: 210 20% 98%;
-  --sidebar-accent: 210 18% 88%;
-  --sidebar-accent-foreground: 210 15% 20%;
-  --sidebar-ring: 212 85% 45%;
-  --popover: 210 19% 92%;
-  --popover-foreground: 210 15% 20%;
-  --popover-border: 210 17% 87%;
-  --primary: 212 85% 45%;
-  --primary-foreground: 210 20% 98%;
-  --secondary: 210 18% 86%;
-  --secondary-foreground: 210 15% 22%;
-  --muted: 210 16% 90%;
-  --muted-foreground: 210 12% 35%;
-  --accent: 210 18% 92%;
-  --accent-foreground: 210 15% 20%;
-  --destructive: 0 75% 42%;
-  --destructive-foreground: 0 10% 98%;
-  --input: 210 20% 75%;
-  --ring: 212 85% 45%;
-  --chart-1: 212 85% 35%;
-  --chart-2: 280 75% 38%;
-  --chart-3: 170 70% 32%;
-  --chart-4: 35 80% 42%;
-  --chart-5: 320 70% 40%;
+  --button-outline: rgba(0,0,0, .08);
+  --badge-outline: rgba(0,0,0, .04);
+  --opaque-button-border-intensity: -6;
+  --elevate-1: rgba(0,0,0, .02);
+  --elevate-2: rgba(0,0,0, .05);
+  
+  /* Soft gradient colors */
+  --gradient-start: 200 30% 96%;
+  --gradient-mid: 250 30% 97%;
+  --gradient-end: 180 25% 96%;
+  
+  /* Calming teal primary */
+  --background: 195 30% 97%;
+  --foreground: 215 25% 18%;
+  --border: 200 20% 88%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 20%;
+  --card-border: 200 20% 90%;
+  --sidebar: 200 25% 96%;
+  --sidebar-foreground: 215 20% 25%;
+  --sidebar-border: 200 20% 90%;
+  --sidebar-primary: 175 55% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 200 25% 92%;
+  --sidebar-accent-foreground: 215 20% 25%;
+  --sidebar-ring: 175 55% 45%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 20% 25%;
+  --popover-border: 200 20% 88%;
+  
+  /* Soft teal as primary */
+  --primary: 175 55% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 250 25% 94%;
+  --secondary-foreground: 250 20% 30%;
+  --muted: 200 20% 94%;
+  --muted-foreground: 215 15% 45%;
+  --accent: 250 30% 95%;
+  --accent-foreground: 250 25% 25%;
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 200 20% 85%;
+  --ring: 175 55% 45%;
+  
+  /* Calming chart colors */
+  --chart-1: 175 55% 45%;
+  --chart-2: 250 50% 60%;
+  --chart-3: 200 60% 50%;
+  --chart-4: 30 70% 55%;
+  --chart-5: 320 50% 55%;
   --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: .5rem;
+  --radius: .625rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(210 15% 12% / 0.03);
   --shadow-xs: 0px 2px 0px 0px hsl(210 15% 12% / 0.05);
   --shadow-sm: 0px 2px 0px 0px hsl(210 15% 12% / 0.04), 0px 1px 2px -1px hsl(210 15% 12% / 0.08);
@@ -87,54 +98,65 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
+/* DARK MODE - Twilight calm */
 .dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
-  --background: 210 15% 8%;
-  --foreground: 210 12% 92%;
-  --border: 210 12% 18%;
-  --card: 210 14% 10%;
-  --card-foreground: 210 12% 90%;
-  --card-border: 210 13% 13%;
-  --sidebar: 210 14% 12%;
-  --sidebar-foreground: 210 12% 88%;
-  --sidebar-border: 210 13% 16%;
-  --sidebar-primary: 212 85% 55%;
-  --sidebar-primary-foreground: 210 15% 8%;
-  --sidebar-accent: 210 16% 18%;
-  --sidebar-accent-foreground: 210 12% 90%;
-  --sidebar-ring: 212 85% 55%;
-  --popover: 210 14% 14%;
-  --popover-foreground: 210 12% 88%;
-  --popover-border: 210 13% 18%;
-  --primary: 212 85% 50%;
-  --primary-foreground: 210 15% 98%;
-  --secondary: 210 16% 20%;
-  --secondary-foreground: 210 12% 85%;
-  --muted: 210 14% 16%;
-  --muted-foreground: 210 10% 60%;
-  --accent: 210 15% 15%;
-  --accent-foreground: 210 12% 88%;
-  --destructive: 0 75% 42%;
-  --destructive-foreground: 0 10% 98%;
-  --input: 210 20% 30%;
-  --ring: 212 85% 55%;
-  --chart-1: 212 85% 65%;
-  --chart-2: 280 75% 68%;
-  --chart-3: 170 70% 62%;
-  --chart-4: 35 80% 65%;
-  --chart-5: 320 70% 65%;
-  --shadow-2xs: 0px 2px 0px 0px hsl(210 15% 0% / 0.15);
-  --shadow-xs: 0px 2px 0px 0px hsl(210 15% 0% / 0.20);
-  --shadow-sm: 0px 2px 0px 0px hsl(210 15% 0% / 0.18), 0px 1px 2px -1px hsl(210 15% 0% / 0.25);
-  --shadow: 0px 2px 0px 0px hsl(210 15% 0% / 0.20), 0px 1px 2px -1px hsl(210 15% 0% / 0.30);
-  --shadow-md: 0px 2px 0px 0px hsl(210 15% 0% / 0.22), 0px 2px 4px -1px hsl(210 15% 0% / 0.35);
-  --shadow-lg: 0px 2px 0px 0px hsl(210 15% 0% / 0.25), 0px 4px 6px -1px hsl(210 15% 0% / 0.40);
-  --shadow-xl: 0px 2px 0px 0px hsl(210 15% 0% / 0.28), 0px 8px 10px -1px hsl(210 15% 0% / 0.45);
-  --shadow-2xl: 0px 2px 0px 0px hsl(210 15% 0% / 0.35);
+  --button-outline: rgba(255,255,255, .08);
+  --badge-outline: rgba(255,255,255, .04);
+  --opaque-button-border-intensity: 7;
+  --elevate-1: rgba(255,255,255, .03);
+  --elevate-2: rgba(255,255,255, .07);
+  
+  /* Dark gradient colors - twilight theme */
+  --gradient-start: 220 30% 12%;
+  --gradient-mid: 260 25% 14%;
+  --gradient-end: 200 25% 10%;
+  
+  --background: 220 25% 10%;
+  --foreground: 200 20% 92%;
+  --border: 220 20% 18%;
+  --card: 220 22% 14%;
+  --card-foreground: 200 18% 90%;
+  --card-border: 220 20% 18%;
+  --sidebar: 220 22% 12%;
+  --sidebar-foreground: 200 18% 88%;
+  --sidebar-border: 220 20% 16%;
+  --sidebar-primary: 175 50% 50%;
+  --sidebar-primary-foreground: 220 25% 10%;
+  --sidebar-accent: 220 20% 18%;
+  --sidebar-accent-foreground: 200 18% 90%;
+  --sidebar-ring: 175 50% 50%;
+  --popover: 220 22% 14%;
+  --popover-foreground: 200 18% 88%;
+  --popover-border: 220 20% 18%;
+  
+  /* Soft teal primary for dark mode */
+  --primary: 175 50% 50%;
+  --primary-foreground: 220 25% 8%;
+  --secondary: 250 20% 22%;
+  --secondary-foreground: 250 15% 85%;
+  --muted: 220 18% 18%;
+  --muted-foreground: 200 15% 55%;
+  --accent: 250 20% 20%;
+  --accent-foreground: 250 15% 88%;
+  --destructive: 0 60% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 220 20% 25%;
+  --ring: 175 50% 50%;
+  
+  /* Chart colors for dark mode */
+  --chart-1: 175 50% 55%;
+  --chart-2: 250 45% 65%;
+  --chart-3: 200 55% 55%;
+  --chart-4: 30 65% 60%;
+  --chart-5: 320 45% 60%;
+  --shadow-2xs: 0px 2px 0px 0px hsl(220 25% 0% / 0.15);
+  --shadow-xs: 0px 2px 0px 0px hsl(220 25% 0% / 0.20);
+  --shadow-sm: 0px 2px 0px 0px hsl(220 25% 0% / 0.18), 0px 1px 2px -1px hsl(220 25% 0% / 0.25);
+  --shadow: 0px 2px 0px 0px hsl(220 25% 0% / 0.20), 0px 1px 2px -1px hsl(220 25% 0% / 0.30);
+  --shadow-md: 0px 2px 0px 0px hsl(220 25% 0% / 0.22), 0px 2px 4px -1px hsl(220 25% 0% / 0.35);
+  --shadow-lg: 0px 2px 0px 0px hsl(220 25% 0% / 0.25), 0px 4px 6px -1px hsl(220 25% 0% / 0.40);
+  --shadow-xl: 0px 2px 0px 0px hsl(220 25% 0% / 0.28), 0px 8px 10px -1px hsl(220 25% 0% / 0.45);
+  --shadow-2xl: 0px 2px 0px 0px hsl(220 25% 0% / 0.35);
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -171,7 +193,59 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+  }
+  
+  /* Soft gradient background for the entire app */
+  #root {
+    min-height: 100vh;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-start)) 0%,
+      hsl(var(--gradient-mid)) 50%,
+      hsl(var(--gradient-end)) 100%
+    );
+    background-attachment: fixed;
+  }
+}
+
+/* Custom gradient utilities for calming UX */
+@layer utilities {
+  .bg-gradient-calm {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-start)) 0%,
+      hsl(var(--gradient-mid)) 50%,
+      hsl(var(--gradient-end)) 100%
+    );
+  }
+  
+  .bg-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      hsl(220 35% 18%) 0%,
+      hsl(260 30% 22%) 50%,
+      hsl(200 30% 16%) 100%
+    );
+  }
+  
+  .dark .bg-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      hsl(220 35% 8%) 0%,
+      hsl(260 30% 12%) 50%,
+      hsl(200 30% 6%) 100%
+    );
+  }
+  
+  .bg-glass {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(12px);
+  }
+  
+  .bg-glass-light {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(8px);
   }
 }
 

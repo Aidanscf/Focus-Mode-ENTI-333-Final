@@ -48,10 +48,14 @@ export default function RoutineCard({ title, content, icon: Icon, variant = "def
   };
 
   return (
-    <Card className={variant === "highlight" ? "border-primary bg-primary/5" : ""}>
-      <CardHeader className="pb-3">
+    <Card className={
+      variant === "highlight" 
+        ? "border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent shadow-lg shadow-primary/10" 
+        : "bg-card/90 backdrop-blur-sm shadow-lg shadow-primary/5 border-border/50"
+    }>
+      <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-3 text-xl">
-          <div className="p-2 rounded-lg bg-primary/10">
+          <div className="p-2.5 rounded-xl bg-primary/15">
             <Icon className="h-5 w-5 text-primary" />
           </div>
           {title}

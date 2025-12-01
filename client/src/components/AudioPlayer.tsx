@@ -80,25 +80,25 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <Card className="p-8">
-      <div className="flex flex-col items-center gap-6">
-        <h3 className="font-display font-semibold text-xl">Guided Meditation</h3>
+    <Card className="p-10 bg-card/95 backdrop-blur-sm shadow-xl shadow-primary/5 border-border/50">
+      <div className="flex flex-col items-center gap-8">
+        <h3 className="font-display font-medium text-xl text-muted-foreground">Guided Meditation</h3>
         
         <Button
           size="icon"
           variant="default"
-          className="h-20 w-20 rounded-full"
+          className="h-24 w-24 rounded-full shadow-lg shadow-primary/30 transition-transform hover:scale-105"
           onClick={togglePlayPause}
           data-testid="button-play-pause"
         >
           {isPlaying ? (
-            <Pause className="h-8 w-8" />
+            <Pause className="h-9 w-9" />
           ) : (
-            <Play className="h-8 w-8 ml-1" />
+            <Play className="h-9 w-9 ml-1" />
           )}
         </Button>
 
-        <div className="w-full space-y-2">
+        <div className="w-full space-y-3 max-w-sm">
           <Slider
             value={[progressPercent]}
             onValueChange={handleSeek}
@@ -107,17 +107,17 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
             className="w-full"
             data-testid="slider-audio-progress"
           />
-          <div className="flex justify-between text-sm text-muted-foreground font-mono">
+          <div className="flex justify-between text-sm text-muted-foreground font-mono px-1">
             <span data-testid="text-current-time">{formatTime(currentTime)}</span>
             <span data-testid="text-duration">{formatTime(duration)}</span>
           </div>
         </div>
 
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={handleRestart}
-          className="gap-2"
+          className="gap-2 text-muted-foreground"
           data-testid="button-restart"
         >
           <RotateCcw className="h-4 w-4" />

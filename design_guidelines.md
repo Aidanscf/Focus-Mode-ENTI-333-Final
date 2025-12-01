@@ -1,129 +1,137 @@
 # FocusMode Design Guidelines
 
 ## Design Approach
-**System**: Apple HIG-inspired with athletic refinement
-**Rationale**: Content-focused minimalism supports mental clarity and focus—essential for pre-match preparation. Clean hierarchy and generous whitespace create calm, distraction-free environments for both data entry and meditation experiences.
+**System**: Apple HIG-inspired with meditative refinement
+**Rationale**: FocusMode bridges athletic performance and mindfulness practice. The interface creates sanctuary—a calm mental space where athletes transition from external chaos to internal focus. Soft gradients and breathable layouts support the psychological shift from preparation to presence.
 
 ## Core Design Principles
-1. **Calm Authority**: Professional, trustworthy interface that instills confidence
-2. **Clarity Over Decoration**: Every element serves the athlete's mental preparation
-3. **Progressive Disclosure**: Complex forms broken into digestible, focused steps
-4. **Meditation-Ready**: Routine output pages designed for immersive focus
+1. **Sanctuary First**: Every screen feels like entering a peaceful mental space
+2. **Breath and Rhythm**: Generous whitespace mirrors breathing exercises—natural pauses between content
+3. **Gentle Authority**: Trustworthy guidance delivered with serenity, not urgency
+4. **Progressive Calm**: Each step deeper into the experience increases tranquility
+
+## Color Palette
+**Background Gradients**: Soft, multi-directional gradients throughout (from top-left to bottom-right)
+- **Primary**: Soft blue (#E8F4F8) to lavender (#F3F0FF) 
+- **Secondary**: Pale teal (#E0F7F4) to warm cream (#FFF8F0)
+- **Meditation Spaces**: Deep twilight blue (#1E3A5F) to soft purple (#4A3B5C)
+
+**Interactive Elements**:
+- Primary CTA: Soft teal (#5DCCCC) with 10% white overlay
+- Secondary CTA: Lavender (#A78BFA) with subtle glow
+- Text on gradients: Deep navy (#1E293B) for contrast, warm gray (#78716C) for secondary
+
+**Component Backgrounds**: 
+- Cards: White with 70% opacity over gradients (backdrop-blur-sm)
+- Input fields: White with 80% opacity, soft shadow
+- Audio player: White with 90% opacity, elevated shadow
 
 ## Typography
-- **Primary Font**: Inter (Google Fonts) - clean, highly legible for forms and data
-- **Display/Headers**: Poppins (Google Fonts) - friendly authority for section titles
+- **Primary**: Inter (body, forms, data)
+- **Display**: Poppins (headers, mantras)
 - **Hierarchy**:
-  - Page Headers: text-4xl/5xl font-bold (Poppins)
-  - Section Titles: text-2xl/3xl font-semibold (Poppins)
-  - Body/Forms: text-base/lg (Inter)
-  - Mantras/Quotes: text-3xl/4xl font-medium italic (Poppins)
-  - Metadata: text-sm text-gray-600
+  - Mantras/Hero: text-5xl/6xl font-light tracking-wide (Poppins)
+  - Page Headers: text-3xl/4xl font-semibold (Poppins)
+  - Section Titles: text-xl/2xl font-medium (Poppins)
+  - Body: text-base/lg leading-relaxed (Inter)
+  - Metadata: text-sm text-gray-500
 
 ## Layout System
-**Spacing Primitives**: Use Tailwind units of 4, 6, 8, 12, 16, 20
-- Form sections: p-8, gap-6
-- Card padding: p-6
-- Component spacing: space-y-8 for vertical rhythm
-- Container max-width: max-w-4xl for forms, max-w-6xl for dashboards
+**Spacing**: Tailwind units of 6, 8, 12, 16, 20, 24
+- Section padding: py-16 md:py-24 for breathing room
+- Card padding: p-8 md:p-12
+- Component gaps: space-y-12 for vertical rhythm
+- Containers: max-w-3xl for forms, max-w-5xl for dashboards
 
 ## Component Library
 
 ### Navigation
-- Minimal top navigation: Logo left, "Profile" and "History" links right
-- Sticky header with subtle shadow on scroll
-- Mobile: Hamburger menu with slide-out drawer
+- Translucent header (backdrop-blur-lg, white 60% opacity)
+- Logo left, Profile/History right in soft navy
+- Mobile: Full-screen overlay menu with gradient background
 
-### Forms (Athlete Setup, Match-Day Check-In)
-- **Multi-step Progress**: Horizontal progress dots/lines showing current step
-- **Input Fields**: Large touch targets (min-h-12), rounded-lg borders, clear labels above inputs
-- **Strategy Template**: Numbered list (1-5) with textarea for each field, placeholder text showing examples
-- **Mood Selection**: Chip buttons (rounded-full, interactive states)
-- **Sliders**: Custom styled with large thumb, track showing value
-- **Primary CTA**: Large (h-14), rounded-xl, full-width on mobile, fixed at bottom with backdrop blur
+### Forms (Multi-Step)
+- Progress dots: Filled soft teal, unfilled white outline
+- Input fields: Large (h-14), rounded-2xl, white 80% background
+- Labels: Above inputs, text-sm font-medium, warm gray
+- Textareas: min-h-32, same styling as inputs
+- Mood chips: Rounded-full, soft teal when selected, white outline when not
+- Sliders: Teal track with white thumb, large touch area
+- Primary CTA: Fixed bottom on mobile with backdrop-blur, rounded-2xl, h-16
 
-### Routine Output Page (Immersive Experience)
-- **Hero Section**: Full-width gradient background, centered mantra in display type
-- **Audio Player**: 
-  - Centered card with play/pause (large circular button)
-  - Progress bar with time indicators
-  - Waveform visualization (subtle, decorative)
-  - Controls: Replay, Download options
-- **Routine Sections**: Stacked cards with icons (breathing, strategy, nutrition, motivation)
-- **Hydration/Carb Cards**: Side-by-side on desktop, visual icons (water drop, wheat)
-- **Strategy Bullets**: Clean list with checkmarks, emphasis on coach reminders
+### Routine Output (Immersive)
+- Hero: Full-viewport gradient (twilight blue to purple), centered mantra in ultra-light display type
+- Audio Player Card:
+  - Central elevated card (shadow-2xl), white 90% background
+  - Large circular play button (120px), soft teal fill
+  - Waveform visualization below controls (animated bars in teal)
+  - Progress bar with rounded ends, timestamp indicators
+  - Secondary actions (replay, download) as icon buttons
+- Routine Sections: White cards (70% opacity) with icons, generous p-12 padding
+- Hydration/Nutrition: Side-by-side cards with large icons (water drop, grain)
+- Strategy: Highlighted card with soft lavender background, checkmark list
 
-### Routine History Dashboard
-- **Card Grid**: 2-column on desktop (grid-cols-1 md:grid-cols-2)
-- **History Cards**: 
-  - Date/timestamp prominent
-  - Opponent name as subtitle
-  - Truncated routine preview
-  - "View Routine" CTA
-  - Hover: Subtle lift (shadow-lg)
+### Dashboard
+- Welcome header: Large greeting with athlete name, text-4xl over gradient
+- Quick Action CTA: Prominent "Begin Pre-Match Routine" card with soft teal gradient
+- Recent Routines: 2-column grid, white cards with shadows, date/opponent/preview
+- Each card: Hover lift (translate-y-1), shadow transition
 
-### Knowledge Articles
-- **Article Grid**: 3-column cards (grid-cols-1 md:grid-cols-2 lg:grid-cols-3)
-- **Article Cards**: 
-  - Icon at top
-  - Title + brief description
-  - "Read More" link
-  - Background: subtle gradient or image
-- **Article Page**: Single column, max-w-prose, generous line-height for readability
+### Knowledge Base
+- 3-column grid on desktop, cards with gradient overlay on background images
+- Card structure: Icon top, title, description, "Read Article" link in teal
+- Article reading: Single column max-w-prose, soft cream background gradient
 
 ### Icons
-- **Library**: Heroicons (outline for general UI, solid for active states)
-- **Usage**: Breathing (wind icon), Strategy (clipboard), Nutrition (beaker), Meditation (sparkles)
+**Library**: Heroicons (outline primary, solid for active states)
+- Breathing: Wind, Strategy: Clipboard-list, Nutrition: Beaker, Meditation: Sparkles, Focus: Eye
 
 ## Images
-- **Hero Images**: Not required for MVP forms—focus on clean, functional design
-- **Knowledge Articles**: Header images for each article (athletes in meditation/focus poses, abstract calm imagery)
-- **Routine Cards**: Optional icon illustrations for breathing/visualization sections
-- **Profile/Empty States**: Motivational imagery (athlete in starting position, sunrise/stadium)
+**Hero Images**:
+- Routine Output: Abstract calm imagery (zen garden, misty mountains, calm water)—full width, subtle overlay gradient
+- Dashboard: Optional soft background (athlete in meditation pose, sunrise, peaceful stadium)—blurred, low opacity
+
+**Article Cards**: Header images showing meditation, breathing exercises, calm athletic preparation—with gradient overlays matching color palette
+
+**Empty States**: Motivational imagery (starting blocks with sunrise, peaceful locker room)—always with text overlay on blurred backgrounds
 
 ## Animations
-**Minimal and purposeful only:**
-- Form step transitions: Slide fade (300ms ease-out)
-- Audio player: Pulse on play button when active
-- Page transitions: Subtle fade (200ms)
-- **No autoplay, no distracting micro-interactions**
+- Page transitions: Gentle fade (400ms ease-in-out)
+- Audio player: Subtle pulse on play button, waveform bars animate gently
+- Form steps: Slide-fade transitions (350ms)
+- Card hovers: Smooth lift (200ms ease-out)
+- No autoplay, no aggressive micro-interactions
 
 ## Page-Specific Layouts
 
 ### Home/Dashboard
-- Welcome header with athlete name
-- Quick action: "Start Pre-Match Routine" (prominent CTA)
-- Recent routines grid below
-- Bottom navigation to Knowledge/Profile
-
-### Athlete Setup (Multi-Step)
-- Progress indicator at top
-- Single focused question per screen
-- Back/Next navigation at bottom
-- Save progress automatically
+- Full-width gradient background
+- Centered welcome (text-5xl, py-20)
+- Primary CTA card (elevated, glowing teal shadow)
+- Recent routines grid below (py-16 top margin)
 
 ### Match-Day Form
-- Opponent info section (text inputs)
-- Strategy template (5 numbered textareas with helper text)
-- Current state (mood chips, energy slider, hydration input)
-- "Generate Routine" CTA (prominent, disabled until form complete)
+- Step indicator with soft teal progress
+- Each section in white card (backdrop-blur), centered max-w-3xl
+- Strategy template: 5 textareas with numbered labels, helper text in gray
+- Current state: Mood chips in pill layout, energy slider full-width
+- Generate CTA: Bottom-fixed with gradient background blur
 
 ### Routine Output
-- Immersive mantra hero (viewport height on mobile)
-- Audio player card (elevated, central focus)
-- Routine sections stacked with breathing room (py-12 between sections)
-- Hydration/nutrition cards side-by-side
-- Strategy reminders in highlighted box
-- Actions footer: Save, Share, Return Home
+- Hero section: 60vh minimum, mantra centered with ample padding
+- Audio card: Elevated center focus, white background with shadow-2xl
+- Sections stacked: py-20 between each, icons left-aligned in cards
+- Hydration/Nutrition: grid-cols-2 gap-8, visual icons prominent
+- Footer actions: Soft buttons in row, "Return Home" primary
 
-### Knowledge Base
-- Grid of article cards
-- Search/filter by topic (future enhancement placeholder)
-- Clean article reading experience
+### Knowledge Articles
+- Grid with gradient card backgrounds
+- Article page: Cream gradient background, centered prose, comfortable line-height
+- Back navigation with breadcrumb in warm gray
 
-## Visual Treatment Notes
-- Avoid harsh athletics aesthetics (no aggressive angles, heavy shadows)
-- Gradients: Subtle, calming (blue-to-purple, soft transitions)
-- Shadows: Minimal elevation (shadow-sm to shadow-md)
-- Borders: Soft (border-gray-200), rounded corners throughout
-- Focus states: Clear, accessible (ring-2 ring-blue-500)
+## Visual Treatment
+- All gradients: Subtle, multi-stop (3-4 colors), diagonal direction
+- Shadows: Soft and diffused (shadow-lg with teal/purple tint)
+- Borders: Minimal use, prefer backdrop-blur cards
+- Focus states: Soft teal ring (ring-2 ring-teal-400/50)
+- Button backgrounds on images: Always backdrop-blur-md with white 20% background

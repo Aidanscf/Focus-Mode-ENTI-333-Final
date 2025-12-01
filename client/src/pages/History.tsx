@@ -26,14 +26,16 @@ export default function History() {
   })) || [];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="font-display font-bold text-4xl mb-2">Routine History</h1>
-      <p className="text-muted-foreground mb-8">
-        Review your past pre-match routines and track your preparation
-      </p>
+    <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <div className="text-center mb-12">
+        <h1 className="font-display font-semibold text-4xl mb-3 tracking-tight">Routine History</h1>
+        <p className="text-muted-foreground text-lg">
+          Review your past pre-match routines and track your preparation
+        </p>
+      </div>
 
       {formattedRoutines.length === 0 ? (
-        <div className="text-center py-16">
+        <div className="text-center py-20">
           <p className="text-muted-foreground text-lg">No routines yet. Start your first pre-match routine!</p>
         </div>
       ) : (

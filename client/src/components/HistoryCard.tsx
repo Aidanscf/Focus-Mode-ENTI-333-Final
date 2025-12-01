@@ -64,7 +64,7 @@ export default function HistoryCard({ id, date, opponent, preview, audioUrl }: H
   };
 
   return (
-    <Card className="hover-elevate transition-all">
+    <Card className="hover-elevate transition-all bg-card/90 backdrop-blur-sm shadow-lg shadow-primary/5 border-border/50">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Calendar className="h-4 w-4 text-primary" />
@@ -76,19 +76,19 @@ export default function HistoryCard({ id, date, opponent, preview, audioUrl }: H
           <UserIcon className="h-4 w-4" />
           <span>vs {opponent}</span>
         </div>
-        <p className="text-sm line-clamp-3">{preview}</p>
+        <p className="text-sm line-clamp-3 text-muted-foreground leading-relaxed">{preview}</p>
         
         {audioUrl && (
-          <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              <Headphones className="h-3 w-3" />
+          <div className="bg-primary/5 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Headphones className="h-3.5 w-3.5" />
               <span>10-Min Guided Meditation</span>
             </div>
             <div className="flex items-center gap-3">
               <Button
                 size="icon"
                 variant="default"
-                className="h-10 w-10 rounded-full shrink-0"
+                className="h-10 w-10 rounded-full shrink-0 shadow-md shadow-primary/20"
                 onClick={togglePlayPause}
                 data-testid={`button-play-${id}`}
               >
@@ -98,7 +98,7 @@ export default function HistoryCard({ id, date, opponent, preview, audioUrl }: H
                   <Play className="h-4 w-4 ml-0.5" />
                 )}
               </Button>
-              <div className="flex-1 space-y-1">
+              <div className="flex-1 space-y-1.5">
                 <Slider
                   value={[progress]}
                   onValueChange={handleSliderChange}
@@ -107,7 +107,7 @@ export default function HistoryCard({ id, date, opponent, preview, audioUrl }: H
                   className="w-full"
                   data-testid={`slider-progress-${id}`}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="flex justify-between text-xs text-muted-foreground font-mono">
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration || 600)}</span>
                 </div>
@@ -124,7 +124,7 @@ export default function HistoryCard({ id, date, opponent, preview, audioUrl }: H
         )}
 
         <Link href={`/routine/${id}`}>
-          <Button variant="outline" size="sm" className="w-full" data-testid={`button-view-${id}`}>
+          <Button variant="outline" size="sm" className="w-full border-border/50" data-testid={`button-view-${id}`}>
             View Full Routine
           </Button>
         </Link>

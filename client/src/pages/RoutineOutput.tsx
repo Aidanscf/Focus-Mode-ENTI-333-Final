@@ -139,36 +139,36 @@ export default function RoutineOutput() {
   return (
     <div className="min-h-screen">
       <section 
-        className="relative min-h-[50vh] flex items-center justify-center"
+        className="relative min-h-[45vh] flex items-center justify-center bg-gradient-hero"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroGradient})`,
+          backgroundImage: `linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(74, 59, 92, 0.85) 50%, rgba(30, 58, 95, 0.9) 100%), url(${heroGradient})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       >
-        <div className="text-center px-4 py-16">
-          <h2 className="font-display font-medium text-xl text-white/80 mb-4">Match vs {routine.opponentName}</h2>
-          <p className="font-display font-semibold text-2xl md:text-4xl italic text-white max-w-3xl mx-auto leading-relaxed">
-            {heroText}
+        <div className="text-center px-4 py-20">
+          <h2 className="font-display font-medium text-lg text-white/70 mb-6 tracking-wide uppercase">Match vs {routine.opponentName}</h2>
+          <p className="font-display font-light text-3xl md:text-5xl text-white max-w-3xl mx-auto leading-relaxed tracking-wide">
+            "{heroText}"
           </p>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl space-y-8">
-        <div className="space-y-4">
+      <div className="container mx-auto px-4 py-16 max-w-4xl space-y-12">
+        <div className="space-y-6">
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Headphones className="h-5 w-5" />
-            <span className="text-sm">10-Minute Guided Meditation</span>
+            <span className="text-sm font-medium">10-Minute Guided Meditation</span>
           </div>
           {routine.routineAudioUrl ? (
             <AudioPlayer audioUrl={routine.routineAudioUrl} />
           ) : (
-            <Card className="p-8">
-              <div className="flex flex-col items-center gap-4 text-center">
-                <div className="p-4 rounded-full bg-muted">
-                  <Headphones className="h-8 w-8 text-muted-foreground" />
+            <Card className="p-10 bg-card/90 backdrop-blur-sm shadow-lg shadow-primary/5 border-border/50">
+              <div className="flex flex-col items-center gap-5 text-center">
+                <div className="p-5 rounded-full bg-primary/10">
+                  <Headphones className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Audio meditation is being generated or was not available for this routine.
                 </p>
               </div>
@@ -216,10 +216,10 @@ export default function RoutineOutput() {
         </div>
 
         {routine.meditationScript && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full border-border/50"
               onClick={() => setShowMeditation(!showMeditation)}
               data-testid="button-toggle-meditation"
             >
@@ -228,10 +228,10 @@ export default function RoutineOutput() {
             </Button>
             
             {showMeditation && (
-              <Card>
+              <Card className="bg-card/90 backdrop-blur-sm shadow-lg shadow-primary/5 border-border/50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
+                    <div className="p-2 rounded-lg bg-primary/15">
                       <Headphones className="h-5 w-5 text-primary" />
                     </div>
                     10-Minute Guided Meditation Script
@@ -251,17 +251,17 @@ export default function RoutineOutput() {
           </div>
         )}
 
-        <div className="flex gap-4 pt-8">
+        <div className="flex gap-4 pt-10">
           <Button 
             variant="outline" 
-            className="flex-1"
+            className="flex-1 border-border/50"
             onClick={() => setLocation("/home")}
             data-testid="button-home"
           >
             Return Home
           </Button>
           <Button 
-            className="flex-1"
+            className="flex-1 shadow-lg shadow-primary/20"
             onClick={() => setLocation("/history")}
             data-testid="button-save"
           >
